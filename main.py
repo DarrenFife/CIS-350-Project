@@ -1,5 +1,6 @@
 import PyQt5.QtWidgets as Qtw
 import PyQt5.QtGui as Qtg
+import PyQt5.QtCore as Qtc
 import sys
 
 
@@ -51,27 +52,33 @@ class Window(Qtw.QWidget):
         url_box = Qtw.QLineEdit()
         url_box.setPlaceholderText("Insert URL")
 
-        download_button = Qtw.QPushButton()
-        download_button.setText("Download")
+        download_button = Qtw.QPushButton("Download")
 
         layout.addWidget(url_box)
-        layout.addWidget(download_button)
-        url_gui.setLayout(layout)
+        layout.addWidget(download_button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
+        url_gui.setLayout(layout)
         self.stacked.addWidget(url_gui)
 
     def video_gui(self):
         video_gui = Qtw.QWidget()
-        layout = Qtw.QHBoxLayout()
+        layout = Qtw.QVBoxLayout()
+        inner_layer1 = Qtw.QHBoxLayout()
+        inner_layer2 = Qtw.QVBoxLayout()
 
         search_box = Qtw.QLineEdit()
         search_box.setPlaceholderText("Stuff")
 
-        search_button = Qtw.QPushButton()
-        search_button.setText("Search")
+        search_button = Qtw.QPushButton("Download")
 
-        layout.addWidget(search_box)
-        layout.addWidget(search_button)
+        label = Qtw.QLabel("Hi")
+
+        inner_layer1.addWidget(search_box)
+        inner_layer1.addWidget(search_button)
+        inner_layer1.setAlignment(Qtc.Qt.AlignTop)
+
+        layout.addLayout(inner_layer1)
+        layout.addLayout(inner_layer2)
 
         video_gui.setLayout(layout)
         self.stacked.addWidget(video_gui)
