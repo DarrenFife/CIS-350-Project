@@ -1,6 +1,7 @@
 import PyQt5.QtWidgets as Qtw
 import PyQt5.QtGui as Qtg
 import PyQt5.QtCore as Qtc
+import qdarktheme as qdt
 import sys
 
 
@@ -17,12 +18,20 @@ class Window(Qtw.QWidget):
         # center screen
         self.center()
 
+        # dark mode by default
+        qdt.setup_theme("dark")
+
         # set layout of window
-        layout = Qtw.QVBoxLayout()
-        self.setLayout(layout)
+        outer_layout = Qtw.QVBoxLayout()
+        self.setLayout(outer_layout)
+
+        # set layout for buttons
+        buttons_layout = Qtw.QHBoxLayout()
+        outer_layout.addLayout(buttons_layout)
 
         # create stacked layout for different windows
         self.stacked = Qtw.QStackedLayout()
+        outer_layout.addLayout(self.stacked)
 
         # call video gui
         self.video_gui()
@@ -30,14 +39,27 @@ class Window(Qtw.QWidget):
         # call url gui
         self.url_gui()
 
-        # create combo box to switch between options
-        self.combo_box = Qtw.QComboBox()
-        self.combo_box.addItems(["Search", "Download"])
-        self.combo_box.activated.connect(self.switch)
+        # button to switch to url download
+        self.url_gui_button = Qtw.QPushButton("Download")
+        self.url_gui_button.clicked.connect(self.switch_to_url)
 
-        # add the widgets
-        layout.addWidget(self.combo_box)
-        layout.addLayout(self.stacked)
+        # button to switch to search
+        self.search_button = Qtw.QPushButton("Search")
+        self.search_button.clicked.connect(self.switch_to_search)
+
+        # dark mode button
+        dark_mode = Qtw.QPushButton("Dark Mode")
+        dark_mode.clicked.connect(self.switch_dark)
+
+        # light mode button
+        light_mode = Qtw.QPushButton("Light Mode")
+        light_mode.clicked.connect(self.switch_light)
+
+        # add the widgets to inner top layer
+        buttons_layout.addWidget(self.search_button)
+        buttons_layout.addWidget(self.url_gui_button)
+        buttons_layout.addWidget(dark_mode)
+        buttons_layout.addWidget(light_mode)
 
     def center(self):
         application = self.frameGeometry()
@@ -47,6 +69,7 @@ class Window(Qtw.QWidget):
 
     def url_gui(self):
         url_gui = Qtw.QWidget()
+
         layout = Qtw.QVBoxLayout()
 
         url_box = Qtw.QLineEdit()
@@ -62,29 +85,42 @@ class Window(Qtw.QWidget):
 
     def video_gui(self):
         video_gui = Qtw.QWidget()
-        layout = Qtw.QVBoxLayout()
+
+        video_outer_layout = Qtw.QVBoxLayout()
+        video_gui.setLayout(video_outer_layout)
+
         inner_layer1 = Qtw.QHBoxLayout()
         inner_layer2 = Qtw.QVBoxLayout()
 
         search_box = Qtw.QLineEdit()
-        search_box.setPlaceholderText("Stuff")
+        search_box.setPlaceholderText("Search")
 
-        search_button = Qtw.QPushButton("Download")
-
-        label = Qtw.QLabel("Hi")
+        search_button = Qtw.QPushButton("Go")
+        search_button.clicked.connect(self.videos)
 
         inner_layer1.addWidget(search_box)
         inner_layer1.addWidget(search_button)
         inner_layer1.setAlignment(Qtc.Qt.AlignTop)
 
-        layout.addLayout(inner_layer1)
-        layout.addLayout(inner_layer2)
+        video_outer_layout.addLayout(inner_layer1)
+        video_outer_layout.addLayout(inner_layer2)
 
-        video_gui.setLayout(layout)
         self.stacked.addWidget(video_gui)
 
-    def switch(self):
-        self.stacked.setCurrentIndex(self.combo_box.currentIndex())
+    def switch_to_url(self):
+        self.stacked.setCurrentIndex(1)
+
+    def switch_to_search(self):
+        self.stacked.setCurrentIndex(0)
+
+    def switch_dark(self):
+        qdt.setup_theme("dark")
+
+    def switch_light(self):
+        qdt.setup_theme("light")
+
+    def videos(self):
+        pass
 
 
 if __name__ == "__main__":
