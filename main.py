@@ -96,7 +96,7 @@ class Window(Qtw.QWidget):
         search_box.setPlaceholderText("Search")
 
         search_button = Qtw.QPushButton("Go")
-        search_button.clicked.connect(self.videos)
+        # search_button.clicked.connect(self.videos)
 
         inner_layer1.addWidget(search_box)
         inner_layer1.addWidget(search_button)
@@ -118,9 +118,6 @@ class Window(Qtw.QWidget):
 
     def switch_light(self):
         qdt.setup_theme("light")
-
-    def videos(self):
-        pass
 
 
 if __name__ == "__main__":
