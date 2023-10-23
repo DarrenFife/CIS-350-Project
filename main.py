@@ -100,10 +100,21 @@ class Window(Qtw.QWidget):
 
         inner_layer1.addWidget(search_box)
         inner_layer1.addWidget(search_button)
+
         inner_layer1.setAlignment(Qtc.Qt.AlignTop)
 
-        video_outer_layout.addLayout(inner_layer1)
-        video_outer_layout.addLayout(inner_layer2)
+        button = Qtw.QPushButton("Video1")
+        button.setMinimumSize(0, 250)
+        inner_layer2.addWidget(button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+        button = Qtw.QPushButton("Video2")
+        button.setMinimumSize(0, 250)
+        inner_layer2.addWidget(button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+        button = Qtw.QPushButton("Video3")
+        button.setMinimumSize(0, 250)
+        inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+
+        video_outer_layout.addLayout(inner_layer1, 0)
+        video_outer_layout.addLayout(inner_layer2, 10)
 
         self.stacked.addWidget(video_gui)
 
