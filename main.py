@@ -4,6 +4,8 @@ import PyQt5.QtCore as Qtc
 import qdarktheme as qdt
 import sys
 
+import pytube_code
+
 
 class Window(Qtw.QWidget):
     def __init__(self):
@@ -105,6 +107,7 @@ class Window(Qtw.QWidget):
 
         button = Qtw.QPushButton("Video1")
         button.setMinimumSize(0, 250)
+        button.clicked.connect(self.on_click)
         inner_layer2.addWidget(button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
         button = Qtw.QPushButton("Video2")
         button.setMinimumSize(0, 250)
@@ -118,6 +121,10 @@ class Window(Qtw.QWidget):
 
         self.stacked.addWidget(video_gui)
 
+    def on_click(self):
+        print("Video downloaded")
+        pytube_code.PytubeMethods.pyDownload()
+    
     def switch_to_url(self):
         self.stacked.setCurrentIndex(1)
 
