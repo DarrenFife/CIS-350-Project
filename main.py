@@ -70,6 +70,7 @@ class Window(Qtw.QWidget):
         self.move(application.topLeft())
 
     def url_gui(self):
+        # TODO: Perhaps should change to self instead of url_gui?
         url_gui = Qtw.QWidget()
 
         layout = Qtw.QVBoxLayout()
@@ -77,7 +78,10 @@ class Window(Qtw.QWidget):
         url_box = Qtw.QLineEdit()
         url_box.setPlaceholderText("Insert URL")
 
+        # TODO: Connect download to here, rename method to more descriptive, somehow pass url_box to it or string
+        # url_box.text() should work
         download_button = Qtw.QPushButton("Download")
+        #download_button.clicked.connect(self.on_click())
 
         layout.addWidget(url_box)
         layout.addWidget(download_button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
@@ -124,7 +128,7 @@ class Window(Qtw.QWidget):
     def on_click(self):
         print("Video downloaded")
         pytube_code.PytubeMethods.pyDownload()
-    
+
     def switch_to_url(self):
         self.stacked.setCurrentIndex(1)
 
