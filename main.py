@@ -126,8 +126,9 @@ class Window(Qtw.QWidget):
         self.stacked.addWidget(video_gui)
 
     def on_click(self):
-        print("Video downloaded")
-        pytube_code.PytubeMethods.pyDownload("https://www.youtube.com/watch?v=qWNQUvIk954")
+        print("Download Initialized")
+        vid = pytube_code.Video("https://www.youtube.com/watch?v=qWNQUvIk954")
+        vid.download_video()
 
     def switch_to_url(self):
         self.stacked.setCurrentIndex(1)
