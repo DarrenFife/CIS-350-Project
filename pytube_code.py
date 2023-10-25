@@ -7,7 +7,6 @@ class Video(pyt.YouTube):
     # URL Parameter constructor
     def __init__(self, url):
         super().__init__(url)
-        self.vidID = extract.video_id(url)
 
     # TODO: Make default constructor work?
     # Default constructor
@@ -18,14 +17,16 @@ class Video(pyt.YouTube):
 
     # Downloads Set Video to Project Folder
     def download_video(self):
+        channel_name = pyt.Channel(self.channel_url).channel_name
+
         # Expands the ~ to the user's home dir, but for me went to root
         # dir = os.path.expanduser("~/Downloads/YouTube-Downloads")
-        path = os.pardir + "/YouTube-Downloads/"
+        path = os.pardir + "/YouTube-Downloads/" + channel_name + "/"
         (super().streams
             # Filter to only .mp4 files
             .filter(progressive=True, file_extension="mp4")
             .get_highest_resolution()
-            .download(path))
-        print("Video downloaded: " + path + self.vidID)
+            .download(output_path=path, skip_existing=True))
+        print("Video downloaded: " + path + self.title + " with ID: " + self.video_id)
 
     pass
