@@ -5,28 +5,40 @@ import os
 
 class Video(pyt.YouTube):
     # URL Parameter constructor
-    def __init__(self, url):
+    def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"):
         super().__init__(url)
 
-    # TODO: Make default constructor work?
-    # Default constructor
-    """def __init__(self):
-        url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        Video(url)
-        """
-
     # Downloads Set Video to Project Folder
-    def download_video(self):
+    def download_video(self, max_res=720):
         channel_name = pyt.Channel(self.channel_url).channel_name
 
         # Expands the ~ to the user's home dir, but for me went to root
         # dir = os.path.expanduser("~/Downloads/YouTube-Downloads")
         path = os.pardir + "/YouTube-Downloads/" + channel_name + "/"
-        (super().streams
-            # Filter to only .mp4 files
-            .filter(progressive=True, file_extension="mp4")
-            .get_highest_resolution()
-            .download(output_path=path, skip_existing=True))
+
+        # Filter to only .mp4 files
+        filtered_streams = super().streams.filter(progressive=True, file_extension="mp4")
+        # TODO: Filter by resolution instead to do this?
+        #reversed_streams = super().streams.order_by("resolution")
+        #print(reversed_streams)
+        #filtered_streams = super().streams
+        #print(filtered_streams)
+        highest_res_stream = filtered_streams.get_highest_resolution()
+
+        # Print resolutions for testing
+        print([stream.resolution for stream in filtered_streams])
+
+        # Initialize to the lowest res in case no res is below max res
+        best_res_stream = filtered_streams.get_lowest_resolution()
+
+        # Find the best res
+        for stream in filtered_streams:
+            if stream.resolution is not None and int(stream.resolution.removesuffix('p')) <= max_res:
+                best_res_stream = stream
+
+        print("Best res:", best_res_stream.resolution)
+
+        best_res_stream.download(output_path=path, skip_existing=True)
         print("Video downloaded: " + path + self.title + " with ID: " + self.video_id)
 
     pass

@@ -129,6 +129,8 @@ class Window(Qtw.QWidget):
         print("Download Initialized")
         vid = pytube_code.Video("https://www.youtube.com/watch?v=qWNQUvIk954")
         vid.download_video()
+        # Call the default constructor
+        pytube_code.Video().download_video()
 
     def switch_to_url(self):
         self.stacked.setCurrentIndex(1)
