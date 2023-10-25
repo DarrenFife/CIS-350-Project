@@ -20,7 +20,7 @@ class Window(Qtw.QWidget):
         self.setWindowTitle("Pytube Video Player")
 
         # set window geometry
-        self.resize(1000, 1000)
+        self.resize(1600, 900)
 
         # center screen
         self.center()
@@ -82,15 +82,15 @@ class Window(Qtw.QWidget):
 
         layout = Qtw.QVBoxLayout()
 
-        url_box = Qtw.QLineEdit()
-        url_box.setPlaceholderText("Insert URL")
+        self.url_box = Qtw.QLineEdit()
+        self.url_box.setPlaceholderText("Insert URL")
 
         # TODO: Connect download to here, rename method to more descriptive, somehow pass url_box to it or string
         # url_box.text() should work
         download_button = Qtw.QPushButton("Download")
-        #download_button.clicked.connect(self.on_click())
+        download_button.clicked.connect(self.on_click)
 
-        layout.addWidget(url_box)
+        layout.addWidget(self.url_box)
         layout.addWidget(download_button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
         url_gui.setLayout(layout)
@@ -110,23 +110,24 @@ class Window(Qtw.QWidget):
         search_box.setPlaceholderText("Search")
 
         search_button = Qtw.QPushButton("Go")
-        # search_button.clicked.connect(self.videos)
+        # search_button.clicked.connect()
 
         inner_layer1.addWidget(search_box)
         inner_layer1.addWidget(search_button)
 
         inner_layer1.setAlignment(Qtc.Qt.AlignTop)
 
+        """
         button = Qtw.QPushButton("Video1")
         button.setMinimumSize(0, 250)
         button.clicked.connect(self.on_click)
-        inner_layer2.addWidget(button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+        inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
         button = Qtw.QPushButton("Video2")
         button.setMinimumSize(0, 250)
-        inner_layer2.addWidget(button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+        inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
         button = Qtw.QPushButton("Video3")
         button.setMinimumSize(0, 250)
-        inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+        inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))"""
 
         video_outer_layout.addLayout(inner_layer1, 0)
         video_outer_layout.addLayout(inner_layer2, 10)
@@ -135,11 +136,18 @@ class Window(Qtw.QWidget):
 
     def on_click(self):
         """Perform the download pytube function."""
-        print("Download Initialized")
-        vid = pytube_code.Video("https://www.youtube.com/watch?v=qWNQUvIk954")
-        vid.download_video()
-        # Call the default constructor
-        pytube_code.Video().download_video()
+        if self.url_box.text() != "":
+            pytube_code.download_link(self.url_box.text())
+
+    def search_click(self):
+        """This is a test function for the search page"""
+        if self.search_box.text() != "":
+            n = 0
+            while n < 3:
+                button = Qtw.QPushButton("")
+                button.setMinimumSize(0, 250)
+                self.inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                n += 1
 
     def switch_to_url(self):
         """Load video browse page."""
