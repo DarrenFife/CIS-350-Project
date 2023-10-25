@@ -8,17 +8,15 @@ class Video(pyt.YouTube):
 
     Keyword arguments:
     """
+    # Default constructor
+    def __init__(self):
+        """Construct a Video object using the video uploaded to set YouTube link."""
+        super().__init__("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+
     # URL Parameter constructor
     def __init__(self, url):
         """Construct a Video object using the video uploaded to the given YouTube link."""
         super().__init__(url)
-
-    # TODO: Make default constructor work?
-    # Default constructor
-    """def __init__(self):
-        url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        Video(url)
-        """
 
     # Downloads Set Video to Project Folder
     def download_video(self):
