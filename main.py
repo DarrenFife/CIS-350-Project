@@ -88,6 +88,7 @@ class Window(Qtw.QWidget):
         # TODO: Connect download to here, rename method to more descriptive, somehow pass url_box to it or string
         # url_box.text() should work
         download_button = Qtw.QPushButton("Download")
+        download_button.clicked.connect(lambda: self.on_click(url_box.text()))
         #download_button.clicked.connect(self.on_click())
 
         layout.addWidget(url_box)
@@ -119,7 +120,6 @@ class Window(Qtw.QWidget):
 
         button = Qtw.QPushButton("Video1")
         button.setMinimumSize(0, 250)
-        button.clicked.connect(self.on_click)
         inner_layer2.addWidget(button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
         button = Qtw.QPushButton("Video2")
         button.setMinimumSize(0, 250)
@@ -133,10 +133,10 @@ class Window(Qtw.QWidget):
 
         self.stacked.addWidget(video_gui)
 
-    def on_click(self):
+    def on_click(self, url):
         """Perform the download pytube function."""
         print("Download Initialized")
-        vid = pytube_code.Video("https://www.youtube.com/watch?v=qWNQUvIk954")
+        vid = pytube_code.Video(url)
         vid.download_video()
         # Call the default constructor
         pytube_code.Video().download_video()
