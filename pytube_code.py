@@ -12,6 +12,7 @@ class Video(pyt.YouTube):
     def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"):
         """Construct a Video object using the video uploaded to the given YouTube link."""
         super().__init__(url)
+        self.channel_name = pyt.Channel(self.channel_url).channel_name
 
 
     # Downloads Set Video to Project Folder
@@ -22,11 +23,10 @@ class Video(pyt.YouTube):
         channel_name -- string of the name of the channel that posted the given video
         path -- string of the download path ("YouTube-Downloads" folder placed parallel to the program folder)
         """
-        channel_name = pyt.Channel(self.channel_url).channel_name
 
         # Expands the ~ to the user's home dir, but for me went to root
         # dir = os.path.expanduser("~/Downloads/YouTube-Downloads")
-        path = os.pardir + "/YouTube-Downloads/" + channel_name + "/"
+        path = os.pardir + "/YouTube-Downloads/" + self.channel_name + "/"
 
         # Filter to only .mp4 files
         filtered_streams = super().streams.filter(progressive=True, file_extension="mp4")
