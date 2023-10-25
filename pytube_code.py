@@ -148,3 +148,6 @@ def download_link(url):
         print("Valid Channel " + url)
         c.download_channel()
 
+
+# Test case
+#download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
