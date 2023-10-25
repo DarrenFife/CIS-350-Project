@@ -8,7 +8,12 @@ import pytube_code
 
 
 class Window(Qtw.QWidget):
+    """The main program window.
+
+    Keyword arguments:
+    """
     def __init__(self):
+        """Initialize the main window given default parameters."""
         super().__init__()
 
         # set window title
@@ -64,12 +69,14 @@ class Window(Qtw.QWidget):
         buttons_layout.addWidget(light_mode)
 
     def center(self):
+        """Define the center of the screen."""
         application = self.frameGeometry()
         center = Qtw.QDesktopWidget().availableGeometry().center()
         application.moveCenter(center)
         self.move(application.topLeft())
 
     def url_gui(self):
+        """Arrange the search and download page."""
         # TODO: Perhaps should change to self instead of url_gui?
         url_gui = Qtw.QWidget()
 
@@ -90,6 +97,7 @@ class Window(Qtw.QWidget):
         self.stacked.addWidget(url_gui)
 
     def video_gui(self):
+        """Arrange the video browse page."""
         video_gui = Qtw.QWidget()
 
         video_outer_layout = Qtw.QVBoxLayout()
@@ -126,24 +134,30 @@ class Window(Qtw.QWidget):
         self.stacked.addWidget(video_gui)
 
     def on_click(self):
+        """Perform the download pytube function."""
         print("Download Initialized")
         vid = pytube_code.Video("https://www.youtube.com/watch?v=qWNQUvIk954")
         vid.download_video()
 
     def switch_to_url(self):
+        """Load video browse page."""
         self.stacked.setCurrentIndex(1)
 
     def switch_to_search(self):
+        """Load search and download page."""
         self.stacked.setCurrentIndex(0)
 
     def switch_dark(self):
+        """Set to dark mode."""
         qdt.setup_theme("dark")
 
     def switch_light(self):
+        """Set to light mode."""
         qdt.setup_theme("light")
 
 
 if __name__ == "__main__":
+    """Close the window."""
     app = Qtw.QApplication(sys.argv)
     window = Window()
     window.show()
