@@ -142,11 +142,12 @@ class Window(Qtw.QWidget):
         """Arrange top 3 search results as buttons."""
         if self.search_box.text() != "":
             vidList = pytube.Search(self.search_box.text())
-            for i in range(2):
-                button = Qtw.QPushButton(vidList.results[i].title)
-                #button.clicked.connect(pytube_code.download_link("https://youtube.com/watch?v=" + vidList.results[i].video_id))
-                button.setMinimumSize(0, 250)
-                self.inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+            for i in range(3):
+                video_button = Qtw.QPushButton(vidList.results[i].title)
+                #Downloading top search result before buttons load, then gives a NoneType error
+                video_button.clicked.connect(pytube_code.download_link("https://youtube.com/watch?v=" + vidList.results[i].video_id))
+                video_button.setMinimumSize(0, 250)
+                self.inner_layer2.addWidget(video_button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
     def switch_to_url(self):
         """Load video browse page."""
