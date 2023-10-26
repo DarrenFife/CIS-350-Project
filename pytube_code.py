@@ -95,13 +95,13 @@ class YDPlaylist(Playlist):
         else:
             super().__init__(url)
 
-            self.yd_list = []
+            self.yd_playlist = []
 
             for url in super().video_urls:
-                self.yd_list.append(Video(url))
+                self.yd_playlist.append(Video(url))
 
     def download_playlist(self, max_res=720):
-        for video in self.yd_list:
+        for video in self.yd_playlist:
             video.download_video(max_res)
 
 
@@ -114,14 +114,11 @@ class YDChannel(Channel):
         else:
             super().__init__(url)
 
-            self.yd_list = []
-
-            for url in super().video_urls:
-                self.yd_list.append(Video(url))
+            print("Channel playlist: " + self.playlist_url)
+            self.all_videos = YDPlaylist(self.playlist_url)
 
     def download_channel(self, max_res=720):
-        for video in self.yd_list:
-            video.download_video(max_res)
+        self.all_videos.download_playlist()
 
 
 def download_link(url):
@@ -151,3 +148,7 @@ def download_link(url):
 
 # Test case
 #download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
+# Random Meme YouTuber I found test case
+#download_link("https://www.youtube.com/@standjardanjar")
+#download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
+#download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
