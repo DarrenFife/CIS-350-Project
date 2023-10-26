@@ -126,15 +126,15 @@ def download_link(url):
     try:
         c = YDChannel(url)
     except InvalidChannelException:
-        print("Invalid Channel URL")
+        print("Invalid Channel " + url)
         try:
             p = YDPlaylist(url)
         except InvalidPlaylistException:
-            print("Invalid Playlist URL")
+            print("Invalid Playlist " + url)
             try:
                 v = Video(url)
             except InvalidVideoException:
-                print("Invalid Video URL")
+                print("Invalid Video " + url)
             else:
                 print("Valid Video " + url)
                 v.download_video()
