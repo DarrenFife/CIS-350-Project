@@ -130,7 +130,7 @@ class Window(Qtw.QWidget):
         """Arrange top 3 search results as buttons."""
         if self.search_box.text() != "":
             vidList = pytube.Search(self.search_box.text())
-            for i in range(2):
+            for i in range(3):
                 video = vidList.results[i]
                 button = Qtw.QPushButton(video.title)
                 button.clicked.connect(lambda: pytube_code.download_link(video.watch_url))
