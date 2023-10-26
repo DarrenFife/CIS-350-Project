@@ -63,10 +63,10 @@ class Video(YouTube):
         # Filter to only .mp4 files
         filtered_streams = super().streams.filter(progressive=True, file_extension="mp4")
         # TODO: Filter by resolution instead to do this?
-        #reversed_streams = super().streams.order_by("resolution")
-        #print(reversed_streams)
-        #filtered_streams = super().streams
-        #print(filtered_streams)
+        # reversed_streams = super().streams.order_by("resolution")
+        # print(reversed_streams)
+        # filtered_streams = super().streams
+        # print(filtered_streams)
         highest_res_stream = filtered_streams.get_highest_resolution()
 
         # Print resolutions for testing
@@ -105,6 +105,27 @@ class YDPlaylist(Playlist):
             video.download_video(max_res)
 
 
+def _find_ids(key, var):
+    if hasattr(var, 'items'):
+        for k, v in var.items():
+            if k == key:
+                yield v
+            if isinstance(v, dict):
+                for result in _find_ids(key, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for playlist_id in _find_ids(key, d):
+                        yield playlist_id
+
+
+def _find_urls(key, var):
+    ids = set(_find_ids(key, var))
+    for playlist_id in ids:
+        url = f'https://www.youtube.com/playlist?list={playlist_id}'
+        yield url
+
+
 class YDChannel(Channel):
     def __init__(self, url):
         try:
@@ -113,12 +134,40 @@ class YDChannel(Channel):
             raise InvalidChannelException from e
         else:
             super().__init__(url)
+            """
 
-            print("Channel playlist: " + self.playlist_url)
-            self.all_videos = YDPlaylist(self.playlist_url)
+            # TODO: Determine why videos_url ends up having /None/
+            self.videos_url = url + "/videos/"
+
+            print("Videos playlist: " + self.videos_url)
+
+            Playlist(self.videos_url)
+
+            # all_videos = self.video_urls
+            # print(all_videos)
+            try:
+                self.all_videos = YDPlaylist(self.videos_url)
+            except InvalidPlaylistException:
+                print("Invalid Playlist " + self.videos_url)"""
+
+    def download_channel_videos(self, max_res=720):
+        pass
+        # TODO: Can end up with no all_videos playlist
+        # self.all_videos.download_playlist(720)
+
+    def download_channel_playlists(self, max_res=720):
+        playlist_urls = list(_find_urls('playlistId', self.initial_data))
+
+        for url in playlist_urls:
+            print(url)
+            playlist = YDPlaylist(url)
+            playlist.download_playlist(720)
 
     def download_channel(self, max_res=720):
-        self.all_videos.download_playlist()
+        pass
+        # TODO: Fix download_channel
+        # self.download_channel_videos(max_res)
+        # self.download_channel_playlists(max_res)
 
 
 def download_link(url):
