@@ -1,6 +1,7 @@
 import PyQt5.QtWidgets as Qtw
 import PyQt5.QtGui as Qtg
 import PyQt5.QtCore as Qtc
+import pytube
 import qdarktheme as qdt
 import sys
 
@@ -102,13 +103,13 @@ class Window(Qtw.QWidget):
         video_gui.setLayout(video_outer_layout)
 
         inner_layer1 = Qtw.QHBoxLayout()
-        inner_layer2 = Qtw.QVBoxLayout()
+        self.inner_layer2 = Qtw.QVBoxLayout()
 
         self.search_box = Qtw.QLineEdit()
         self.search_box.setPlaceholderText("Search")
 
         search_button = Qtw.QPushButton("Go")
-        search_button.clicked.connect(self.search_click(inner_layer2))
+        search_button.clicked.connect(self.search_click)
 
         inner_layer1.addWidget(self.search_box)
         inner_layer1.addWidget(search_button)
@@ -128,7 +129,7 @@ class Window(Qtw.QWidget):
         inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))"""
 
         video_outer_layout.addLayout(inner_layer1, 0)
-        video_outer_layout.addLayout(inner_layer2, 10)
+        video_outer_layout.addLayout(self.inner_layer2, 10)
 
         self.stacked.addWidget(video_gui)
 
@@ -137,15 +138,15 @@ class Window(Qtw.QWidget):
         if self.url_box.text() != "":
             pytube_code.download_link(self.url_box.text())
 
-    def search_click(self, layer):
+    def search_click(self):
         """Arrange top 3 search results as buttons."""
         if self.search_box.text() != "":
-            vidList = pytube_code.Search(self.search_box.text())
-            for i in range(0, 2):
+            vidList = pytube.Search(self.search_box.text())
+            for i in range(2):
                 button = Qtw.QPushButton(vidList.results[i].title)
                 #button.clicked.connect(pytube_code.download_link("https://youtube.com/watch?v=" + vidList.results[i].video_id))
                 button.setMinimumSize(0, 250)
-                layer.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                self.inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
     def switch_to_url(self):
         """Load video browse page."""
