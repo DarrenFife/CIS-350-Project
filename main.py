@@ -90,7 +90,8 @@ class Window(Qtw.QWidget):
         download_button.clicked.connect(self.on_click)
 
         layout.addWidget(self.url_box)
-        layout.addWidget(download_button, alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+        layout.addWidget(download_button,
+                         alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
         url_gui.setLayout(layout)
         self.stacked.addWidget(url_gui)
@@ -129,13 +130,15 @@ class Window(Qtw.QWidget):
     def search_click(self):
         """Arrange top 3 search results as buttons."""
         if self.search_box.text() != "":
-            vidList = pytube.Search(self.search_box.text())
+            vid_list = pytube.Search(self.search_box.text())
             for i in range(3):
-                video = vidList.results[i]
+                video = vid_list.results[i]
                 button = Qtw.QPushButton(video.title)
-                button.clicked.connect(lambda: pytube_code.download_link(video.watch_url))
+                url = video.watch_url
+                button.clicked.connect(lambda: pytube_code.download_link(url))
                 button.setMinimumSize(0, 250)
-                self.inner_layer2.addWidget(button, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                self.inner_layer2.addWidget(button, 1,
+                                            Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
     def switch_to_url(self):
         """Load video browse page."""

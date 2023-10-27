@@ -52,8 +52,10 @@ class Video(YouTube):
         """Download a video from a YouTube link.
 
         Keyword arguments:
-        channel_name -- string of the name of the channel that posted the given video
-        path -- string of the download path ("YouTube-Downloads" folder placed parallel to the program folder)
+        channel_name -- string of the name of the channel
+            that posted the given video
+        path -- string of the download path
+        ("YouTube-Downloads" folder placed parallel to the program folder)
         """
 
         # Expands the ~ to the user's home dir, but for me went to root
@@ -61,7 +63,8 @@ class Video(YouTube):
         path = os.pardir + "/YouTube-Downloads/" + self.channel_name + "/"
 
         # Filter to only .mp4 files
-        filtered_streams = super().streams.filter(progressive=True, file_extension="mp4")
+        filtered_streams = super().streams.filter(progressive=True,
+                                                  file_extension="mp4")
         # TODO: Filter by resolution instead to do this?
         # reversed_streams = super().streams.order_by("resolution")
         # print(reversed_streams)
@@ -77,13 +80,15 @@ class Video(YouTube):
 
         # Find the best res
         for stream in filtered_streams:
-            if stream.resolution is not None and int(stream.resolution.removesuffix('p')) <= max_res:
+            if (stream.resolution is not None and
+                    int(stream.resolution.removesuffix('p')) <= max_res):
                 best_res_stream = stream
 
         print("Best res:", best_res_stream.resolution)
 
         best_res_stream.download(output_path=path, skip_existing=True)
-        print("Video downloaded: " + path + self.title + " with ID: " + self.video_id)
+        print("Video downloaded: " + path + self.title +
+              " with ID: " + self.video_id)
 
     pass
 
@@ -196,8 +201,8 @@ def download_link(url):
 
 
 # Test case
-#download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
+# download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
 # Random Meme YouTuber I found test case
-#download_link("https://www.youtube.com/@standjardanjar")
-#download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
-#download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
+# download_link("https://www.youtube.com/@standjardanjar")
+# download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
+# download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
