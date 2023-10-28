@@ -32,7 +32,8 @@ class Video(YouTube):
     """
     # URL Parameter constructor
     def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"):
-        """Construct a Video object using the video uploaded to the given YouTube link."""
+        """Construct a Video object using the video
+        uploaded to the given YouTube link."""
         try:
             extract.video_id(url)
         except RegexMatchError as e:
