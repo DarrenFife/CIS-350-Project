@@ -1,0 +1,44 @@
+@startuml classes
+set namespaceSeparator none
+class "<color:red>InvalidChannelException</color>" as pytube_code.InvalidChannelException {
+}
+class "<color:red>InvalidPlaylistException</color>" as pytube_code.InvalidPlaylistException {
+}
+class "<color:red>InvalidURLException</color>" as pytube_code.InvalidURLException {
+}
+class "<color:red>InvalidVideoException</color>" as pytube_code.InvalidVideoException {
+}
+class "Video" as pytube_code.Video {
+  channel_name
+  download_video(max_res)
+}
+class "Window" as main.Window {
+  inner_layer2
+  search_box
+  search_button
+  stacked
+  url_box
+  url_gui_button
+  center()
+  on_click()
+  search_click()
+  switch_dark()
+  switch_light()
+  switch_to_search()
+  switch_to_url()
+  url_gui()
+  video_gui()
+}
+class "YDChannel" as pytube_code.YDChannel {
+  {abstract}download_channel(max_res)
+  download_channel_playlists(max_res)
+  {abstract}download_channel_videos(max_res)
+}
+class "YDPlaylist" as pytube_code.YDPlaylist {
+  yd_playlist : list
+  download_playlist(max_res)
+}
+pytube_code.InvalidChannelException --|> pytube_code.InvalidURLException
+pytube_code.InvalidPlaylistException --|> pytube_code.InvalidURLException
+pytube_code.InvalidVideoException --|> pytube_code.InvalidURLException
+@enduml

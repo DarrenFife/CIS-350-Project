@@ -1,0 +1,8 @@
+@startuml packages
+set namespaceSeparator none
+package "main" as main {
+}
+package "pytube_code" as pytube_code {
+}
+main --> pytube_code
+@enduml
