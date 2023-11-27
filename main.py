@@ -1,13 +1,12 @@
-import os
-
 import PyQt5.QtWidgets as Qtw
 import PyQt5.QtGui as Qtg
 import PyQt5.QtCore as Qtc
 import pytube
 import qdarktheme as qdt
 import sys
-
 import pytube_code
+import os
+import requests
 
 
 class Window(Qtw.QWidget):
@@ -54,18 +53,26 @@ class Window(Qtw.QWidget):
 
         # button to switch to url download
         self.url_gui_button = Qtw.QPushButton("Download")
+        self.url_gui_button.setFixedHeight(45)
+        self.url_gui_button.setFont(Qtg.QFont("Times", 20))
         self.url_gui_button.clicked.connect(self.switch_to_url)
 
         # button to switch to search
         self.search_button = Qtw.QPushButton("Search")
+        self.search_button.setFixedHeight(45)
+        self.search_button.setFont(Qtg.QFont("Times", 20))
         self.search_button.clicked.connect(self.switch_to_search)
 
         # button to switch themes
         theme_button = Qtw.QPushButton("Themes")
+        theme_button.setFixedHeight(45)
+        theme_button.setFont(Qtg.QFont("Times", 20))
         theme_button.clicked.connect(self.switch_theme)
 
         # button to access video folder
         folder_button = Qtw.QPushButton("Folder")
+        folder_button.setFixedHeight(45)
+        folder_button.setFont(Qtg.QFont("Times", 20))
         folder_button.clicked.connect(self.access_folder)
 
         # add the widgets to inner top layer
@@ -139,6 +146,11 @@ class Window(Qtw.QWidget):
             for i in range(3):
                 video = vid_list.results[i]
                 button = Qtw.QPushButton(video.title)
+                button.setFont(Qtg.QFont("Times", 12))
+                pixmap = Qtg.QPixmap()
+                pixmap.loadFromData(requests.get(video.thumbnail_url).content)
+                button.setIcon(Qtg.QIcon(pixmap))
+                button.setIconSize(Qtc.QSize(450, 150))
                 url = video.watch_url
                 button.clicked.connect(lambda: pytube_code.download_link(url))
                 button.setMinimumSize(0, 250)
