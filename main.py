@@ -1,3 +1,5 @@
+import os
+
 import PyQt5.QtWidgets as Qtw
 import PyQt5.QtGui as Qtg
 import PyQt5.QtCore as Qtc
@@ -29,6 +31,9 @@ class Window(Qtw.QWidget):
         # dark mode by default
         qdt.setup_theme("dark")
 
+        # keep track of theme
+        self._theme_number = 0
+
         # set layout of window
         outer_layout = Qtw.QVBoxLayout()
         self.setLayout(outer_layout)
@@ -55,19 +60,19 @@ class Window(Qtw.QWidget):
         self.search_button = Qtw.QPushButton("Search")
         self.search_button.clicked.connect(self.switch_to_search)
 
-        # dark mode button
-        dark_mode = Qtw.QPushButton("Dark Mode")
-        dark_mode.clicked.connect(self.switch_dark)
+        # button to switch themes
+        theme_button = Qtw.QPushButton("Themes")
+        theme_button.clicked.connect(self.switch_theme)
 
-        # light mode button
-        light_mode = Qtw.QPushButton("Light Mode")
-        light_mode.clicked.connect(self.switch_light)
+        # button to access video folder
+        folder_button = Qtw.QPushButton("Folder")
+        folder_button.clicked.connect(self.access_folder)
 
         # add the widgets to inner top layer
         buttons_layout.addWidget(self.search_button)
         buttons_layout.addWidget(self.url_gui_button)
-        buttons_layout.addWidget(dark_mode)
-        buttons_layout.addWidget(light_mode)
+        buttons_layout.addWidget(theme_button)
+        buttons_layout.addWidget(folder_button)
 
     def center(self):
         """Define the center of the screen."""
@@ -148,13 +153,19 @@ class Window(Qtw.QWidget):
         """Load search and download page."""
         self.stacked.setCurrentIndex(0)
 
-    def switch_dark(self):
-        """Set to dark mode."""
-        qdt.setup_theme("dark")
+    def switch_theme(self):
+        if self._theme_number == 0:
+            qdt.setup_theme("light")
+            qdt.setup_theme("light")
+            self._theme_number += 1
+        else:
+            qdt.setup_theme("dark")
+            qdt.setup_theme("dark")
+            self._theme_number -= 1
 
-    def switch_light(self):
-        """Set to light mode."""
-        qdt.setup_theme("light")
+    def access_folder(self):
+        path = os.pardir + "/YouTube-Downloads/"
+        Qtw.QFileDialog.getOpenFileName(self, directory=path)
 
 
 if __name__ == "__main__":
