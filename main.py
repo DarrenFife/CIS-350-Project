@@ -22,7 +22,7 @@ class Window(Qtw.QWidget):
         self.setWindowTitle("Pytube Video Player")
 
         # set window geometry
-        self.resize(1600, 900)
+        self.setFixedSize(1600, 900)
 
         # center screen
         self.center()
@@ -143,14 +143,18 @@ class Window(Qtw.QWidget):
         """Arrange top 3 search results as buttons."""
         if self.search_box.text() != "":
             vid_list = pytube.Search(self.search_box.text())
+            if self.inner_layer2.count() > 0:
+                self.clear_window(self.inner_layer2)
             for i in range(3):
                 video = vid_list.results[i]
-                button = Qtw.QPushButton(video.title)
-                button.setFont(Qtg.QFont("Times", 12))
+                button = Qtw.QPushButton(f"     {video.title}\n\n     "
+                                         f"    Created by: {video.author}")
+                button.setFont(Qtg.QFont("Times", 20))
                 pixmap = Qtg.QPixmap()
                 pixmap.loadFromData(requests.get(video.thumbnail_url).content)
                 button.setIcon(Qtg.QIcon(pixmap))
-                button.setIconSize(Qtc.QSize(450, 150))
+                button.setIconSize(Qtc.QSize(400, 235))
+                button.setStyleSheet("text-align:left;")
                 url = video.watch_url
                 button.clicked.connect(lambda: pytube_code.download_link(url))
                 button.setMinimumSize(0, 250)
@@ -178,6 +182,14 @@ class Window(Qtw.QWidget):
     def access_folder(self):
         path = os.pardir + "/YouTube-Downloads/"
         Qtw.QFileDialog.getOpenFileName(self, directory=path)
+
+    def clear_window(self, layout):
+        for i in reversed(range(layout.count())):
+            item = layout.itemAt(i)
+            if isinstance(item, Qtw.QWidgetItem):
+                print("widget" + str(item))
+                item.widget().close()
+            layout.removeItem(item)
 
 
 if __name__ == "__main__":
