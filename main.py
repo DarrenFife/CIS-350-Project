@@ -7,6 +7,7 @@ import sys
 import pytube_code
 import os
 import requests
+from datetime import date
 
 
 class Window(Qtw.QWidget):
@@ -191,10 +192,32 @@ class Window(Qtw.QWidget):
                 item.widget().close()
             layout.removeItem(item)
 
+def fetch_updates():
+    try:
+        fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r')
+        programInfo = fhand.readlines()
+    except:
+        fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'x')
+        programInfo = [date.today().ctime()]
+        fhand.writelines(programInfo)
+    if programInfo[0] != date.today().ctime():
+        print("Fetching updates!")
+        # TODO: Download videos not already downloaded in subscribed channels, preferrably add a pop-up with info
+    fhand.close()
+
+def update_date():
+    with open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r') as fhand:
+        programInfo = fhand.readlines()
+    programInfo[0] = date.today().ctime()
+    fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'w')
+    fhand.writelines(programInfo)
+    fhand.close()
+    app.exec_()
 
 if __name__ == "__main__":
     """Close the window."""
     app = Qtw.QApplication(sys.argv)
     window = Window()
+    fetch_updates()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(update_date())
