@@ -103,12 +103,17 @@ class YDPlaylist(Playlist):
 
             self.yd_playlist = []
 
-            for url in super().video_urls:
-                self.yd_playlist.append(Video(url))
+            for video_url in self.video_urls:
+                self.yd_playlist.append(Video(video_url))
 
     def download_playlist(self, max_res=720):
+        # TODO: Open file of
+        print("Dir:", self.owner, "Title:", self.title + ".txt")
+        print(self.title)
         for video in self.yd_playlist:
+            # TODO: Get the name of the playlist owner, then save name of playlist.txt as in their folder under Playlists
             video.download_video(max_res)
+            print("Append to txt:", video.channel_name + "/" + video.title)
 
 
 def _find_ids(key, var):
@@ -140,40 +145,42 @@ class YDChannel(Channel):
             raise InvalidChannelException from e
         else:
             super().__init__(url)
+
             """
+            Deprecated assuming Videos playlist is generate
+            self.all_videos = []
 
-            # TODO: Determine why videos_url ends up having /None/
-            self.videos_url = url + "/videos/"
-
-            print("Videos playlist: " + self.videos_url)
-
-            Playlist(self.videos_url)
-
-            # all_videos = self.video_urls
-            # print(all_videos)
-            try:
-                self.all_videos = YDPlaylist(self.videos_url)
-            except InvalidPlaylistException:
-                print("Invalid Playlist " + self.videos_url)"""
+            for video_url in self.video_urls:
+                self.all_videos.append(Video(video_url))
 
     def download_channel_videos(self, max_res=720):
-        pass
-        # TODO: Can end up with no all_videos playlist
-        # self.all_videos.download_playlist(720)
+        for video in self.all_videos:
+            video.download_video(max_res)
+    """
 
     def download_channel_playlists(self, max_res=720):
         playlist_urls = list(_find_urls('playlistId', self.initial_data))
 
-        for url in playlist_urls:
-            print(url)
-            playlist = YDPlaylist(url)
-            playlist.download_playlist(720)
+        print(playlist_urls)
+
+        # If channel has watch later playlist remove it
+        if "https://www.youtube.com/playlist?list=WL" in playlist_urls:
+            playlist_urls.remove("https://www.youtube.com/playlist?list=WL")
+
+        for playlist_url in playlist_urls:
+            try:
+                p = YDPlaylist(playlist_url)
+            except InvalidPlaylistException:
+                print("Invalid Playlist " + playlist_url)
+            else:
+                print("Valid Playlist " + playlist_url)
+                playlist = YDPlaylist(playlist_url)
+                playlist.download_playlist(720)
 
     def download_channel(self, max_res=720):
-        pass
         # TODO: Fix download_channel
         # self.download_channel_videos(max_res)
-        # self.download_channel_playlists(max_res)
+        self.download_channel_playlists(max_res)
 
 
 def download_link(url):
@@ -204,6 +211,6 @@ def download_link(url):
 # Test case
 # download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
 # Random Meme YouTuber I found test case
-# download_link("https://www.youtube.com/@standjardanjar")
+download_link("https://www.youtube.com/@standjardanjar")
 # download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
 # download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
