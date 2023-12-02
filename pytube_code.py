@@ -140,46 +140,66 @@ def _find_urls(key, var):
 class YDChannel(Channel):
     def __init__(self, url):
         try:
-            extract.channel_name(url)
+            base_url = "https://www.youtube.com/" + extract.channel_name(url).split("/")[1] + "/"
+            print("Base:", base_url)
         except RegexMatchError as e:
             raise InvalidChannelException from e
         else:
-            super().__init__(url)
+            super().__init__(base_url)
 
-            """
-            Deprecated assuming Videos playlist is generate
             self.all_videos = []
 
             for video_url in self.video_urls:
                 self.all_videos.append(Video(video_url))
 
+            self.playlist_urls = []
+
+            channel_pages = {base_url, base_url + "videos/", base_url + "playlists/", base_url + "releases/", url}
+
+            for extension in channel_pages:
+                channel_page = base_url + extension
+                try:
+                    extract.channel_name(channel_page)
+                except RegexMatchError as e:
+                    print(channel_page + " not found.")
+                else:
+                    found_urls = list(_find_urls('playlistId', Channel(channel_page).initial_data))
+
+                    # Skip Watch Later playlists as they break download
+                    if "https://www.youtube.com/playlist?list=WL" in found_urls:
+                        found_urls.remove("https://www.youtube.com/playlist?list=WL")
+
+                    print(channel_page + " found playlist(s):")
+                    print(found_urls)
+
+                    # Ensure no duplicates
+                    for found_url in found_urls:
+                        if found_url not in self.playlist_urls:
+                            self.playlist_urls.append(found_url)
+                        else:
+                            print("Found duplicate playlist url (skipped):", found_url)
+
+            print("All urls:")
+            print(self.playlist_urls)
+
     def download_channel_videos(self, max_res=720):
         for video in self.all_videos:
             video.download_video(max_res)
-    """
 
     def download_channel_playlists(self, max_res=720):
-        playlist_urls = list(_find_urls('playlistId', self.initial_data))
-
-        print(playlist_urls)
-
-        # If channel has watch later playlist remove it
-        if "https://www.youtube.com/playlist?list=WL" in playlist_urls:
-            playlist_urls.remove("https://www.youtube.com/playlist?list=WL")
-
-        for playlist_url in playlist_urls:
+        for playlist_url in self.playlist_urls:
             try:
-                p = YDPlaylist(playlist_url)
-            except InvalidPlaylistException:
-                print("Invalid Playlist " + playlist_url)
-            else:
-                print("Valid Playlist " + playlist_url)
                 playlist = YDPlaylist(playlist_url)
-                playlist.download_playlist(720)
+            except InvalidPlaylistException:
+                print("Invalid Playlist: " + playlist_url)
+            else:
+                print("Valid Playlist: " + playlist_url)
+                playlist.download_playlist(max_res)
 
     def download_channel(self, max_res=720):
         # TODO: Fix download_channel
-        # self.download_channel_videos(max_res)
+        pass
+        self.download_channel_videos(max_res)
         self.download_channel_playlists(max_res)
 
 
@@ -214,3 +234,5 @@ def download_link(url):
 # download_link("https://www.youtube.com/@standjardanjar")
 # download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
 # download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
+
+download_link("https://www.youtube.com/@alyankovic/")
