@@ -4,6 +4,7 @@ from pytube.exceptions import VideoUnavailable
 from pytube.exceptions import RegexMatchError
 import os
 
+DOWNLOAD_DIR = os.pardir + "/YouTube-Downloads/"
 
 class InvalidURLException(Exception):
     """Raised when URL is not valid"""
@@ -59,9 +60,7 @@ class Video(YouTube):
         ("YouTube-Downloads" folder placed parallel to the program folder)
         """
 
-        # Expands the ~ to the user's home dir, but for me went to root
-        # dir = os.path.expanduser("~/Downloads/YouTube-Downloads")
-        path = os.pardir + "/YouTube-Downloads/" + self.channel_name + "/"
+        path = DOWNLOAD_DIR + self.channel_name + "/"
 
         # Filter to only .mp4 files
         filtered_streams = super().streams.filter(progressive=True,
