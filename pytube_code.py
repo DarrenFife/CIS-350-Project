@@ -49,7 +49,10 @@ class YDVideo(YouTube):
                 raise VideoUnavailable
             else:
                 print(f'Creating video object: {url}')
-                self.channel_name = pyt.Channel(self.channel_url).channel_name
+                if channel_name is None:
+                    self.channel_name = Channel(self.channel_url).channel_name
+                else:
+                    self.channel_name = channel_name
 
     """Downloads Set Video to Project Folder"""
     def download_video(self, max_res=720):
@@ -111,7 +114,7 @@ class YDPlaylist(Playlist):
 
     def download_playlist(self, max_res=720):
         # TODO: Open file of
-        print("Dir:", self.owner, "Title:", self.title + ".txt")
+        print(DOWNLOAD_DIR + "/Playlists/" + self.title + ".txt")
         print(self.title)
         for video in self.yd_playlist:
             # TODO: Get the name of the playlist owner, then save name of playlist.txt as in their folder under Playlists
@@ -153,7 +156,7 @@ class YDChannel(Channel):
             self.all_videos = []
 
             for video_url in self.video_urls:
-                self.all_videos.append(YDVideo(video_url))
+                self.all_videos.append(YDVideo(url=video_url, channel_name=self.channel_name))
 
             self.playlist_urls = []
 
