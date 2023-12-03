@@ -2,6 +2,7 @@ import pytube as pyt
 from pytube import YouTube, Playlist, Channel, extract
 from pytube.exceptions import VideoUnavailable
 from pytube.exceptions import RegexMatchError
+from pytube.exceptions import AgeRestrictedError
 import os
 
 DOWNLOAD_DIR = os.pardir + "/YouTube-Downloads/"
@@ -42,6 +43,7 @@ class Video(YouTube):
         else:
             try:
                 super().__init__(url)
+                self.video_url = url
             except VideoUnavailable:
                 print(f'Video {url} is unavailable, skipping.')
                 raise VideoUnavailable
@@ -59,36 +61,38 @@ class Video(YouTube):
         path -- string of the download path
         ("YouTube-Downloads" folder placed parallel to the program folder)
         """
+        try:
+            path = DOWNLOAD_DIR + self.channel_name + "/"
 
-        path = DOWNLOAD_DIR + self.channel_name + "/"
+            # Filter to only .mp4 files
+            filtered_streams = super().streams.filter(progressive=True,
+                                                      file_extension="mp4")
+            # TODO: Filter by resolution instead to do this?
+            # reversed_streams = super().streams.order_by("resolution")
+            # print(reversed_streams)
+            # filtered_streams = super().streams
+            # print(filtered_streams)
+            highest_res_stream = filtered_streams.get_highest_resolution()
 
-        # Filter to only .mp4 files
-        filtered_streams = super().streams.filter(progressive=True,
-                                                  file_extension="mp4")
-        # TODO: Filter by resolution instead to do this?
-        # reversed_streams = super().streams.order_by("resolution")
-        # print(reversed_streams)
-        # filtered_streams = super().streams
-        # print(filtered_streams)
-        highest_res_stream = filtered_streams.get_highest_resolution()
+            # Print resolutions for testing
+            print([stream.resolution for stream in filtered_streams])
 
-        # Print resolutions for testing
-        print([stream.resolution for stream in filtered_streams])
+            # Initialize to the lowest res in case no res is below max res
+            best_res_stream = filtered_streams.get_lowest_resolution()
 
-        # Initialize to the lowest res in case no res is below max res
-        best_res_stream = filtered_streams.get_lowest_resolution()
+            # Find the best res
+            for stream in filtered_streams:
+                if (stream.resolution is not None and
+                        int(stream.resolution.removesuffix('p')) <= max_res):
+                    best_res_stream = stream
 
-        # Find the best res
-        for stream in filtered_streams:
-            if (stream.resolution is not None and
-                    int(stream.resolution.removesuffix('p')) <= max_res):
-                best_res_stream = stream
+            print("Best res:", best_res_stream.resolution)
 
-        print("Best res:", best_res_stream.resolution)
-
-        best_res_stream.download(output_path=path, skip_existing=True)
-        print("Video downloaded: " + path + self.title +
-              " with ID: " + self.video_id)
+            best_res_stream.download(output_path=path, skip_existing=True)
+            print("Video downloaded: " + path + self.title +
+                  " with ID: " + self.video_id)
+        except AgeRestrictedError:
+            print(f'Video {self.video_url} is age restricted, skipping as no credentials.')
 
     pass
 
@@ -234,4 +238,7 @@ def download_link(url):
 # download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
 # download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
 
-#download_link("https://www.youtube.com/@alyankovic/")
+# Age restricted test
+# download_link("https://www.youtube.com/watch?v=gSPbrmIpcy0")
+
+# download_link("https://www.youtube.com/@alyankovic/")
