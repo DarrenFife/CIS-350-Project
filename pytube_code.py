@@ -13,7 +13,7 @@ class InvalidURLException(Exception):
 
 
 class InvalidVideoException(InvalidURLException):
-    """Raised when URL is not a valid Video"""
+    """Raised when URL is not a valid YDVideo"""
     pass
 
 
@@ -27,14 +27,14 @@ class InvalidChannelException(InvalidURLException):
     pass
 
 
-class Video(YouTube):
+class YDVideo(YouTube):
     """A video uploaded to YouTube.
 
     Keyword arguments:
     """
     # URL Parameter constructor
-    def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"):
-        """Construct a Video object using the video
+    def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ", channel_name=None):
+        """Construct a YDVideo object using the video
         uploaded to the given YouTube link."""
         try:
             extract.video_id(url)
@@ -107,7 +107,7 @@ class YDPlaylist(Playlist):
             self.yd_playlist = []
 
             for video_url in self.video_urls:
-                self.yd_playlist.append(Video(video_url))
+                self.yd_playlist.append(YDVideo(video_url))
 
     def download_playlist(self, max_res=720):
         # TODO: Open file of
@@ -153,7 +153,7 @@ class YDChannel(Channel):
             self.all_videos = []
 
             for video_url in self.video_urls:
-                self.all_videos.append(Video(video_url))
+                self.all_videos.append(YDVideo(video_url))
 
             self.playlist_urls = []
 
@@ -217,7 +217,7 @@ def download_link(url):
         except InvalidPlaylistException:
             print("Invalid Playlist " + url)
             try:
-                v = Video(url)
+                v = YDVideo(url)
             except InvalidVideoException:
                 print("Invalid Video " + url)
             else:
