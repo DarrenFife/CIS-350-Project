@@ -52,6 +52,9 @@ class Window(Qtw.QWidget):
         # call url gui
         self.url_gui()
 
+        #call sub gui
+        self.sub_gui()
+
         # button to switch to url download
         self.url_gui_button = Qtw.QPushButton("Download")
         self.url_gui_button.setFixedHeight(45)
@@ -76,11 +79,18 @@ class Window(Qtw.QWidget):
         folder_button.setFont(Qtg.QFont("Times", 20))
         folder_button.clicked.connect(self.access_folder)
 
+        # button to access subscribed channels
+        subscribed_button = Qtw.QPushButton("Subscribed")
+        subscribed_button.setFixedHeight(45)
+        subscribed_button.setFont(Qtg.QFont("Times", 20))
+        subscribed_button.clicked.connect(self.switch_to_subscribed)
+
         # add the widgets to inner top layer
         buttons_layout.addWidget(self.search_button)
         buttons_layout.addWidget(self.url_gui_button)
         buttons_layout.addWidget(theme_button)
         buttons_layout.addWidget(folder_button)
+        buttons_layout.addWidget(subscribed_button)
 
     def center(self):
         """Define the center of the screen."""
@@ -135,6 +145,54 @@ class Window(Qtw.QWidget):
 
         self.stacked.addWidget(video_gui)
 
+    def sub_gui(self):
+        """Arrange the subscribed channels page."""
+        def appendFile(string, fileList):
+            """Appends a string to the next line of a file."""
+            fileList.append("\n" + string)
+            with open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'w') as fhand:
+                fhand.writelines(fileList)
+            self.clear_window(self.sub_layout)
+            for i in range(0, len(programInfo)):
+                if i == 0:
+                    subLabel = Qtw.QLabel("Subscribed Channels:\n")
+                    subLabel.setFont(Qtg.QFont("Times", 30))
+                    self.sub_layout.addWidget(subLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                else:
+                    channelLabel = Qtw.QLabel(programInfo[i])
+                    channelLabel.setFont(Qtg.QFont("Times", 15))
+                    self.sub_layout.addWidget(channelLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+            
+        sub_gui = Qtw.QWidget()
+
+        self.sub_layout = Qtw.QVBoxLayout()
+        sub_gui.setLayout(self.sub_layout)
+
+        fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r')
+        programInfo = fhand.readlines()
+        fhand.close()
+
+        for i in range(0, len(programInfo)):
+            if i == 0:
+                subLabel = Qtw.QLabel("Subscribed Channels:\n")
+                subLabel.setFont(Qtg.QFont("Times", 30))
+                self.sub_layout.addWidget(subLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+            else:
+                channelLabel = Qtw.QLabel(programInfo[i])
+                channelLabel.setFont(Qtg.QFont("Times", 15))
+                self.sub_layout.addWidget(channelLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+
+        bottomLabel = Qtw.QHBoxLayout()
+        channelBox = Qtw.QLineEdit()
+        channelBox.setPlaceholderText("Type channel URL here...")
+        channelButton = Qtw.QPushButton("Add Channel")
+        channelButton.clicked.connect(lambda: appendFile(channelBox.text(), programInfo))
+        bottomLabel.addWidget(channelBox)
+        bottomLabel.addWidget(channelButton)
+        self.sub_layout.addLayout(bottomLabel)
+
+        self.stacked.addWidget(sub_gui)
+
     def on_click(self):
         """Perform the download pytube function."""
         if self.url_box.text() != "":
@@ -161,6 +219,10 @@ class Window(Qtw.QWidget):
                 button.setMinimumSize(0, 250)
                 self.inner_layer2.addWidget(button, 1,
                                             Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+
+    def switch_to_subscribed(self):
+        """Load subscribed channels page."""
+        self.stacked.setCurrentIndex(2)
 
     def switch_to_url(self):
         """Load video browse page."""
@@ -198,9 +260,9 @@ def fetch_updates():
         programInfo = fhand.readlines()
     except:
         fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'x')
-        programInfo = [date.today().ctime()]
+        programInfo = [date.today().ctime() + "\n"]
         fhand.writelines(programInfo)
-    if programInfo[0] != date.today().ctime():
+    if programInfo[0] != date.today().ctime() + "\n":
         print("Fetching updates!")
         # TODO: Download videos not already downloaded in subscribed channels, preferrably add a pop-up with info
     fhand.close()
@@ -208,7 +270,7 @@ def fetch_updates():
 def update_date():
     with open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r') as fhand:
         programInfo = fhand.readlines()
-    programInfo[0] = date.today().ctime()
+    programInfo[0] = date.today().ctime() + "\n"
     fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'w')
     fhand.writelines(programInfo)
     fhand.close()
