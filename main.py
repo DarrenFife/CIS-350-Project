@@ -264,7 +264,8 @@ def fetch_updates():
         fhand.writelines(programInfo)
     if programInfo[0] != date.today().ctime() + "\n":
         print("Fetching updates!")
-        # TODO: Download videos not already downloaded in subscribed channels, preferrably add a pop-up with info
+        for i in range(1, len(programInfo)):
+            pytube_code.download_link(programInfo[i])
     fhand.close()
 
 def update_date():
