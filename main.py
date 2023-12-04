@@ -364,7 +364,7 @@ def fetch_updates():
     if programInfo[0] != date.today().ctime() + "\n":
         print("Fetching updates!")
         for i in range(1, len(programInfo)):
-            pytube_code.download_link(programInfo[i], Window.resolution)
+            pytube_code.download_link(programInfo[i], 720)
     fhand.close()
 
 def update_date():
