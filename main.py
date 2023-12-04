@@ -199,12 +199,12 @@ class Window(Qtw.QWidget):
             self.clear_window(self.sub_layout)
             for i in range(0, len(programInfo)):
                 if i == 0:
-                    subLabel = Qtw.QLabel("Subscribed Channels:\n")
-                    subLabel.setFont(Qtg.QFont("Times", 30))
-                    self.sub_layout.addWidget(subLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                    sub_label = Qtw.QLabel("Subscribed Channels:\n")
+                    sub_label.setFont(Qtg.QFont("Times", 30))
+                    self.sub_layout.addWidget(sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
                 else:
-                    channelLabel = Qtw.QLabel(programInfo[i])
-                    channelLabel.setFont(Qtg.QFont("Times", 15))
+                    channel_label = Qtw.QLabel(programInfo[i])
+                    channel_label.setFont(Qtg.QFont("Times", 15))
                     self.sub_layout.addWidget(channelLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
             
         sub_gui = Qtw.QWidget()
@@ -218,22 +218,22 @@ class Window(Qtw.QWidget):
 
         for i in range(0, len(programInfo)):
             if i == 0:
-                subLabel = Qtw.QLabel("Subscribed Channels:\n")
-                subLabel.setFont(Qtg.QFont("Times", 30))
-                self.sub_layout.addWidget(subLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                sub_label = Qtw.QLabel("Subscribed Channels:\n")
+                sub_label.setFont(Qtg.QFont("Times", 30))
+                self.sub_layout.addWidget(sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
             else:
                 channelLabel = Qtw.QLabel(programInfo[i])
                 channelLabel.setFont(Qtg.QFont("Times", 15))
                 self.sub_layout.addWidget(channelLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
-        bottomLabel = Qtw.QHBoxLayout()
-        channelBox = Qtw.QLineEdit()
-        channelBox.setPlaceholderText("Type channel URL here...")
-        channelButton = Qtw.QPushButton("Add Channel")
-        channelButton.clicked.connect(lambda: appendFile(channelBox.text(), programInfo))
-        bottomLabel.addWidget(channelBox)
-        bottomLabel.addWidget(channelButton)
-        self.sub_layout.addLayout(bottomLabel)
+        bottom_label = Qtw.QHBoxLayout()
+        channel_box = Qtw.QLineEdit()
+        channel_box.setPlaceholderText("Type channel URL here...")
+        channel_button = Qtw.QPushButton("Add Channel")
+        channel_button.clicked.connect(lambda: appendFile(channel_box.text(), programInfo))
+        bottom_label.addWidget(channel_box)
+        bottom_label.addWidget(channel_button)
+        self.sub_layout.addLayout(bottom_label)
 
         self.stacked.addWidget(sub_gui)
 
@@ -358,6 +358,8 @@ def fetch_updates():
         fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r')
         programInfo = fhand.readlines()
     except:
+        if not os.path.exists(os.pardir +  "/YouTube-Downloads/-Downloads"):
+            os.makedirs(os.pardir +  "/YouTube-Downloads/")
         fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'x')
         programInfo = [date.today().ctime() + "\n"]
         fhand.writelines(programInfo)
