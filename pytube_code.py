@@ -206,6 +206,21 @@ class YDChannel(Channel):
         self.download_channel_playlists(max_res)
 
 
+def check_channel_or_playlist_url(url):
+    """"Checks if a link is a channel or playlist"""
+    try:
+        c = YDChannel(url)
+    except InvalidChannelException:
+        try:
+            p = YDPlaylist(url)
+        except InvalidPlaylistException:
+            return False
+        else:
+            return True
+    else:
+        return True
+
+
 def download_link(url, max_res):
     """Download a YouTube link by turning it into the right type of object"""
     try:
