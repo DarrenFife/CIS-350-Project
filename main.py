@@ -35,6 +35,12 @@ class Window(Qtw.QWidget):
         # keep track of theme
         self._theme_number = 0
 
+        # keep track of organized search list for page view
+        self.search_page_view = []
+
+        # keep track of page number
+        self.page_number = 0
+
         # set layout of window
         outer_layout = Qtw.QVBoxLayout()
         self.setLayout(outer_layout)
@@ -127,18 +133,23 @@ class Window(Qtw.QWidget):
         # TODO: Perhaps should change to self instead of url_gui?
         url_gui = Qtw.QWidget()
 
+        # create layout of widget
         layout = Qtw.QVBoxLayout()
 
+        # create input box for video url
         self.url_box = Qtw.QLineEdit()
         self.url_box.setPlaceholderText("Insert URL")
 
+        # create download button
         download_button = Qtw.QPushButton("Download")
         download_button.clicked.connect(self.on_click)
 
+        # add widget to layout and adjust it to the top of the widget
         layout.addWidget(self.url_box)
         layout.addWidget(download_button,
                          alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
+        # add layout to page and add it to stackedLayout
         url_gui.setLayout(layout)
         self.stacked.addWidget(url_gui)
 
@@ -146,26 +157,36 @@ class Window(Qtw.QWidget):
         """Arrange the video browse page."""
         video_gui = Qtw.QWidget()
 
+        # create outer layout for page
         video_outer_layout = Qtw.QVBoxLayout()
         video_gui.setLayout(video_outer_layout)
 
+        # create layouts for each element of page (search line, videos, and page buttons))
         inner_layer1 = Qtw.QHBoxLayout()
         self.inner_layer2 = Qtw.QVBoxLayout()
+        self.inner_layer3 = Qtw.QHBoxLayout()
 
+        # create search box
         self.search_box = Qtw.QLineEdit()
         self.search_box.setPlaceholderText("Search")
 
+        # create search button
         search_button = Qtw.QPushButton("Go")
         search_button.clicked.connect(self.search_click)
 
+        # add widgets to first layer
         inner_layer1.addWidget(self.search_box)
         inner_layer1.addWidget(search_button)
 
+        # adjusts first inner layer to the top of the layout
         inner_layer1.setAlignment(Qtc.Qt.AlignTop)
 
+        # add layouts to page
         video_outer_layout.addLayout(inner_layer1, 0)
-        video_outer_layout.addLayout(self.inner_layer2, 10)
+        video_outer_layout.addLayout(self.inner_layer2, 9)
+        video_outer_layout.addLayout(self.inner_layer3, 1)
 
+        # add page to stackedLayout
         self.stacked.addWidget(video_gui)
 
     def sub_gui(self):
@@ -191,7 +212,7 @@ class Window(Qtw.QWidget):
         self.sub_layout = Qtw.QVBoxLayout()
         sub_gui.setLayout(self.sub_layout)
 
-        fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r')
+        fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
         programInfo = fhand.readlines()
         fhand.close()
 
@@ -222,27 +243,52 @@ class Window(Qtw.QWidget):
             pytube_code.download_link(self.url_box.text(), self.resolution)
 
     def search_click(self):
-        """Arrange top 3 search results as buttons."""
+        """Create sorted list to reference for different pages"""
         if self.search_box.text() != "":
-            vid_list = pytube.Search(self.search_box.text())
-            if self.inner_layer2.count() > 0:
-                self.clear_window(self.inner_layer2)
-            for i in range(3):
-                video = vid_list.results[i]
-                button = Qtw.QPushButton(f"     {video.title}\n\n     "
-                                         f"    Created by: {video.author}")
-                button.setFont(Qtg.QFont("Times", 20))
-                pixmap = Qtg.QPixmap()
-                pixmap.loadFromData(requests.get(video.thumbnail_url).content)
-                button.setIcon(Qtg.QIcon(pixmap))
-                button.setIconSize(Qtc.QSize(400, 235))
-                button.setStyleSheet("text-align:left;")
-                url = video.watch_url
-                button.clicked.connect(lambda: pytube_code.download_link(url, self.resolution))
-                button.setMinimumSize(0, 250)
-                self.inner_layer2.addWidget(button, 1,
-                                            Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
-                
+            search_list = pytube.Search(self.search_box.text()).results
+            self.search_page_view = self.page_view_list(search_list)
+            self.show_videos(self.search_page_view)
+
+    def show_videos(self, organized_search_list):
+        if self.inner_layer2.count() > 0:
+            self.clear_window(self.inner_layer2)
+        for video in organized_search_list[self.page_number]:
+            time = self.get_time(video.length)
+            button = Qtw.QPushButton(f"     {video.title}\n\n     "
+                                     f"Created by: {video.author}\n\n   "
+                                     f"  Length: {time[0]}:{time[1]}")
+            button.setFont(Qtg.QFont("Times", 20))
+            pixmap = Qtg.QPixmap()
+            pixmap.loadFromData(requests.get(video.thumbnail_url).content)
+            button.setIcon(Qtg.QIcon(pixmap))
+            button.setIconSize(Qtc.QSize(400, 235))
+            button.setStyleSheet("text-align:left;")
+            url = video.watch_url
+            button.clicked.connect(lambda: pytube_code.download_link(url))
+            button.setMinimumSize(0, 250)
+            self.inner_layer2.addWidget(button, 1,
+                                        Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+        prev_button = Qtw.QPushButton("Previous")
+        prev_button.clicked.connect(self.previous_button)
+        nxt_button = Qtw.QPushButton("Next")
+        nxt_button.clicked.connect(self.next_button)
+        self.clear_window(self.inner_layer3)
+        if 0 < self.page_number < len(organized_search_list) - 1:
+            self.inner_layer3.addWidget(prev_button)
+            self.inner_layer3.addWidget(nxt_button)
+        if self.page_number == 0:
+            self.inner_layer3.addWidget(nxt_button)
+        if self.page_number == len(organized_search_list) - 1:
+            self.inner_layer3.addWidget(prev_button)
+
+    def next_button(self):
+        self.page_number += 1
+        self.show_videos(self.search_page_view)
+
+    def previous_button(self):
+        self.page_number -= 1
+        self.show_videos(self.search_page_view)
+
     def set_res(self, res):
         self.resolution = res
 
@@ -259,6 +305,8 @@ class Window(Qtw.QWidget):
         self.stacked.setCurrentIndex(0)
 
     def switch_theme(self):
+        """Toggle button for switching themes"""
+        # doing the change twice is required to fully change theme
         if self._theme_number == 0:
             qdt.setup_theme("light")
             qdt.setup_theme("light")
@@ -269,16 +317,41 @@ class Window(Qtw.QWidget):
             self._theme_number -= 1
 
     def access_folder(self):
-        path = os.pardir + "/YouTube-Downloads/"
-        Qtw.QFileDialog.getOpenFileName(self, directory=path)
+        """Access folder from within the app"""
+        os.system("explorer.exe " + os.pardir)
 
     def clear_window(self, layout):
+        """Clears the videos from search page once we don't need them anymore"""
         for i in reversed(range(layout.count())):
             item = layout.itemAt(i)
             if isinstance(item, Qtw.QWidgetItem):
-                print("widget" + str(item))
                 item.widget().close()
             layout.removeItem(item)
+
+    def page_view_list(self, lov):
+        num = 0
+        if len(lov) % 3 == 0:
+            num = len(lov) // 3
+        else:
+            num = (len(lov) // 3) + 1
+        new_lst = [[] for i in range(num)]
+        for i in new_lst:
+            for j in range(3):
+                if len(lov) >= 3:
+                    i.append(lov[j])
+                elif len(lov) > 0:
+                    for x in lov:
+                        i.append(x)
+                    break
+                else:
+                    break
+            lov = lov[3:]
+        return new_lst
+
+    def get_time(self, seconds):
+        min = seconds // 60
+        sec = seconds % 60
+        return min, sec
 
 def fetch_updates():
     try:
