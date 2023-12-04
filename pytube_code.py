@@ -203,8 +203,6 @@ class YDChannel(Channel):
                 playlist.download_playlist(max_res)
 
     def download_channel(self, max_res):
-        # TODO: Fix download_channel
-        pass
         self.download_channel_videos(max_res)
         self.download_channel_playlists(max_res)
 
