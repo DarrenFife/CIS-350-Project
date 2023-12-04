@@ -6,6 +6,7 @@ import PyQt5.QtCore as Qtc
 import pytube
 import qdarktheme as qdt
 import sys
+from sys import platform
 import pytube_code
 import os
 import requests
@@ -318,6 +319,15 @@ class Window(Qtw.QWidget):
 
     def access_folder(self):
         """Access folder from within the app"""
+        if platform == "linux" or platform == "linux2":
+            # linux
+            print("Linux detected")
+        elif platform == "darwin":
+            # OS X
+            print("OS X detected")
+        elif platform == "win32":
+            # Windows...
+            print("Windows detected lol")
         os.system("explorer.exe " + os.pardir)
 
     def clear_window(self, layout):
