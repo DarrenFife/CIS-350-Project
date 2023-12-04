@@ -7,6 +7,7 @@ import os
 
 DOWNLOAD_DIR = os.pardir + "/YouTube-Downloads/"
 
+
 class InvalidURLException(Exception):
     """Raised when URL is not valid"""
     pass
