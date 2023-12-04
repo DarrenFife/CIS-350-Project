@@ -45,10 +45,10 @@ class YDVideo(YouTube):
                 super().__init__(url)
                 self.video_url = url
             except VideoUnavailable:
-                print(f'Video {url} is unavailable, skipping.')
+                print(f'Video {self.title} from {url} is unavailable, skipping.')
                 raise VideoUnavailable
             else:
-                print(f'Creating video object: {url}')
+                print(f'Creating video object: {self.title} from {url}')
                 if channel_name is None:
                     self.channel_name = Channel(self.channel_url).channel_name
                 else:
@@ -97,7 +97,7 @@ class YDVideo(YouTube):
         except AgeRestrictedError:
             print(f'Video {self.video_url} is age restricted, skipping as no credentials.')
 
-    pass
+        return self.channel_name + "/" + self.title
 
 
 class YDPlaylist(Playlist):
@@ -114,12 +114,10 @@ class YDPlaylist(Playlist):
 
     def download_playlist(self, max_res):
         # TODO: Open file of
-        print(DOWNLOAD_DIR + "/Playlists/" + self.title + ".txt")
-        print(self.title)
+        print(DOWNLOAD_DIR + "Playlists/" + self.title + ".txt")
         for video in self.yd_playlist:
             # TODO: Get the name of the playlist owner, then save name of playlist.txt as in their folder under Playlists
-            video.download_video(max_res)
-            print("Append to txt:", video.channel_name + "/" + video.title)
+            print("Append to txt:", video.download_video(max_res))
 
 
 def _find_ids(key, var):
@@ -233,13 +231,13 @@ def download_link(url, max_res):
 
 
 # Test case
-# download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
+# download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A", 720)
 # Random Meme YouTuber I found test case
-# download_link("https://www.youtube.com/@standjardanjar")
-# download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
-# download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
+# download_link("https://www.youtube.com/@standjardanjar", 720)
+# download_link("https://youtu.be/T5KBMhw87n8?feature=shared", 720)
+# download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q", 720)
 
 # Age restricted test
-# download_link("https://www.youtube.com/watch?v=gSPbrmIpcy0")
+# download_link("https://www.youtube.com/watch?v=gSPbrmIpcy0", 720)
 
-# download_link("https://www.youtube.com/@alyankovic/")
+# download_link("https://www.youtube.com/@alyankovic/", 720)
