@@ -1,4 +1,6 @@
 import PyQt5.QtWidgets as Qtw
+from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QMenuBar
 import PyQt5.QtGui as Qtg
 import PyQt5.QtCore as Qtc
 import pytube
@@ -8,7 +10,6 @@ import pytube_code
 import os
 import requests
 from datetime import date
-
 
 class Window(Qtw.QWidget):
     """The main program window.
@@ -67,6 +68,27 @@ class Window(Qtw.QWidget):
         self.search_button.setFont(Qtg.QFont("Times", 20))
         self.search_button.clicked.connect(self.switch_to_search)
 
+        # dropdown menu to change max resolution
+        self.resolution = 720
+        res_action1 = QAction("144p", self)
+        res_action2 = QAction("240p", self)
+        res_action3 = QAction("360p", self)
+        res_action4 = QAction("480p", self)
+        res_action5 = QAction("720p", self)
+        menuBar = QMenuBar()
+        menuBar.setFont(Qtg.QFont("Times", 20))
+        resMenu = menuBar.addMenu("&Download Resolution")
+        resMenu.addAction(res_action1)
+        res_action1.triggered.connect(lambda: self.set_res(144))
+        resMenu.addAction(res_action2)
+        res_action2.triggered.connect(lambda: self.set_res(240))
+        resMenu.addAction(res_action3)
+        res_action3.triggered.connect(lambda: self.set_res(360))
+        resMenu.addAction(res_action4)
+        res_action4.triggered.connect(lambda: self.set_res(480))
+        resMenu.addAction(res_action5)
+        res_action5.triggered.connect(lambda: self.set_res(720))
+
         # button to switch themes
         theme_button = Qtw.QPushButton("Themes")
         theme_button.setFixedHeight(45)
@@ -86,6 +108,7 @@ class Window(Qtw.QWidget):
         subscribed_button.clicked.connect(self.switch_to_subscribed)
 
         # add the widgets to inner top layer
+        buttons_layout.addWidget(menuBar)
         buttons_layout.addWidget(self.search_button)
         buttons_layout.addWidget(self.url_gui_button)
         buttons_layout.addWidget(theme_button)
@@ -196,7 +219,7 @@ class Window(Qtw.QWidget):
     def on_click(self):
         """Perform the download pytube function."""
         if self.url_box.text() != "":
-            pytube_code.download_link(self.url_box.text())
+            pytube_code.download_link(self.url_box.text(), self.resolution)
 
     def search_click(self):
         """Arrange top 3 search results as buttons."""
@@ -215,10 +238,13 @@ class Window(Qtw.QWidget):
                 button.setIconSize(Qtc.QSize(400, 235))
                 button.setStyleSheet("text-align:left;")
                 url = video.watch_url
-                button.clicked.connect(lambda: pytube_code.download_link(url))
+                button.clicked.connect(lambda: pytube_code.download_link(url, self.resolution))
                 button.setMinimumSize(0, 250)
                 self.inner_layer2.addWidget(button, 1,
                                             Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                
+    def set_res(self, res):
+        self.resolution = res
 
     def switch_to_subscribed(self):
         """Load subscribed channels page."""
@@ -265,7 +291,7 @@ def fetch_updates():
     if programInfo[0] != date.today().ctime() + "\n":
         print("Fetching updates!")
         for i in range(1, len(programInfo)):
-            pytube_code.download_link(programInfo[i])
+            pytube_code.download_link(programInfo[i], Window.resolution)
     fhand.close()
 
 def update_date():
@@ -280,7 +306,7 @@ def update_date():
 if __name__ == "__main__":
     """Close the window."""
     app = Qtw.QApplication(sys.argv)
-    window = Window()
     fetch_updates()
+    window = Window()
     window.show()
     sys.exit(update_date())

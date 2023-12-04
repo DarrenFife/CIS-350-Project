@@ -2,6 +2,7 @@ import pytube as pyt
 from pytube import YouTube, Playlist, Channel, extract
 from pytube.exceptions import VideoUnavailable
 from pytube.exceptions import RegexMatchError
+from pytube.exceptions import AgeRestrictedError
 import os
 
 DOWNLOAD_DIR = os.pardir + "/YouTube-Downloads/"
@@ -12,7 +13,7 @@ class InvalidURLException(Exception):
 
 
 class InvalidVideoException(InvalidURLException):
-    """Raised when URL is not a valid Video"""
+    """Raised when URL is not a valid YDVideo"""
     pass
 
 
@@ -26,14 +27,14 @@ class InvalidChannelException(InvalidURLException):
     pass
 
 
-class Video(YouTube):
+class YDVideo(YouTube):
     """A video uploaded to YouTube.
 
     Keyword arguments:
     """
     # URL Parameter constructor
-    def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"):
-        """Construct a Video object using the video
+    def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ", channel_name=None):
+        """Construct a YDVideo object using the video
         uploaded to the given YouTube link."""
         try:
             extract.video_id(url)
@@ -42,15 +43,19 @@ class Video(YouTube):
         else:
             try:
                 super().__init__(url)
+                self.video_url = url
             except VideoUnavailable:
                 print(f'Video {url} is unavailable, skipping.')
                 raise VideoUnavailable
             else:
                 print(f'Creating video object: {url}')
-                self.channel_name = pyt.Channel(self.channel_url).channel_name
+                if channel_name is None:
+                    self.channel_name = Channel(self.channel_url).channel_name
+                else:
+                    self.channel_name = channel_name
 
     """Downloads Set Video to Project Folder"""
-    def download_video(self, max_res=720):
+    def download_video(self, max_res):
         """Download a video from a YouTube link.
 
         Keyword arguments:
@@ -59,36 +64,38 @@ class Video(YouTube):
         path -- string of the download path
         ("YouTube-Downloads" folder placed parallel to the program folder)
         """
+        try:
+            path = DOWNLOAD_DIR + self.channel_name + "/"
 
-        path = DOWNLOAD_DIR + self.channel_name + "/"
+            # Filter to only .mp4 files
+            filtered_streams = super().streams.filter(progressive=True,
+                                                      file_extension="mp4")
+            # TODO: Filter by resolution instead to do this?
+            # reversed_streams = super().streams.order_by("resolution")
+            # print(reversed_streams)
+            # filtered_streams = super().streams
+            # print(filtered_streams)
+            highest_res_stream = filtered_streams.get_highest_resolution()
 
-        # Filter to only .mp4 files
-        filtered_streams = super().streams.filter(progressive=True,
-                                                  file_extension="mp4")
-        # TODO: Filter by resolution instead to do this?
-        # reversed_streams = super().streams.order_by("resolution")
-        # print(reversed_streams)
-        # filtered_streams = super().streams
-        # print(filtered_streams)
-        highest_res_stream = filtered_streams.get_highest_resolution()
+            # Print resolutions for testing
+            print([stream.resolution for stream in filtered_streams])
 
-        # Print resolutions for testing
-        print([stream.resolution for stream in filtered_streams])
+            # Initialize to the lowest res in case no res is below max res
+            best_res_stream = filtered_streams.get_lowest_resolution()
 
-        # Initialize to the lowest res in case no res is below max res
-        best_res_stream = filtered_streams.get_lowest_resolution()
+            # Find the best res
+            for stream in filtered_streams:
+                if (stream.resolution is not None and
+                        int(stream.resolution.removesuffix('p')) <= max_res):
+                    best_res_stream = stream
 
-        # Find the best res
-        for stream in filtered_streams:
-            if (stream.resolution is not None and
-                    int(stream.resolution.removesuffix('p')) <= max_res):
-                best_res_stream = stream
+            print("Best res:", best_res_stream.resolution)
 
-        print("Best res:", best_res_stream.resolution)
-
-        best_res_stream.download(output_path=path, skip_existing=True)
-        print("Video downloaded: " + path + self.title +
-              " with ID: " + self.video_id)
+            best_res_stream.download(output_path=path, skip_existing=True)
+            print("Video downloaded: " + path + self.title +
+                  " with ID: " + self.video_id)
+        except AgeRestrictedError:
+            print(f'Video {self.video_url} is age restricted, skipping as no credentials.')
 
     pass
 
@@ -103,11 +110,11 @@ class YDPlaylist(Playlist):
             self.yd_playlist = []
 
             for video_url in self.video_urls:
-                self.yd_playlist.append(Video(video_url))
+                self.yd_playlist.append(YDVideo(video_url))
 
-    def download_playlist(self, max_res=720):
+    def download_playlist(self, max_res):
         # TODO: Open file of
-        print("Dir:", self.owner, "Title:", self.title + ".txt")
+        print(DOWNLOAD_DIR + "/Playlists/" + self.title + ".txt")
         print(self.title)
         for video in self.yd_playlist:
             # TODO: Get the name of the playlist owner, then save name of playlist.txt as in their folder under Playlists
@@ -149,7 +156,7 @@ class YDChannel(Channel):
             self.all_videos = []
 
             for video_url in self.video_urls:
-                self.all_videos.append(Video(video_url))
+                self.all_videos.append(YDVideo(url=video_url, channel_name=self.channel_name))
 
             self.playlist_urls = []
 
@@ -181,11 +188,11 @@ class YDChannel(Channel):
             print("All urls:")
             print(self.playlist_urls)
 
-    def download_channel_videos(self, max_res=720):
+    def download_channel_videos(self, max_res):
         for video in self.all_videos:
             video.download_video(max_res)
 
-    def download_channel_playlists(self, max_res=720):
+    def download_channel_playlists(self, max_res):
         for playlist_url in self.playlist_urls:
             try:
                 playlist = YDPlaylist(playlist_url)
@@ -195,14 +202,14 @@ class YDChannel(Channel):
                 print("Valid Playlist: " + playlist_url)
                 playlist.download_playlist(max_res)
 
-    def download_channel(self, max_res=720):
+    def download_channel(self, max_res):
         # TODO: Fix download_channel
         pass
         self.download_channel_videos(max_res)
         self.download_channel_playlists(max_res)
 
 
-def download_link(url):
+def download_link(url, max_res):
     """Download a YouTube link by turning it into the right type of object"""
     try:
         c = YDChannel(url)
@@ -213,18 +220,18 @@ def download_link(url):
         except InvalidPlaylistException:
             print("Invalid Playlist " + url)
             try:
-                v = Video(url)
+                v = YDVideo(url)
             except InvalidVideoException:
                 print("Invalid Video " + url)
             else:
                 print("Valid Video " + url)
-                v.download_video()
+                v.download_video(max_res)
         else:
             print("Valid Playlist " + url)
-            p.download_playlist()
+            p.download_playlist(max_res)
     else:
         print("Valid Channel " + url)
-        c.download_channel()
+        c.download_channel(max_res)
 
 
 # Test case
@@ -234,4 +241,7 @@ def download_link(url):
 # download_link("https://youtu.be/T5KBMhw87n8?feature=shared")
 # download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q")
 
-download_link("https://www.youtube.com/@alyankovic/")
+# Age restricted test
+# download_link("https://www.youtube.com/watch?v=gSPbrmIpcy0")
+
+# download_link("https://www.youtube.com/@alyankovic/")
