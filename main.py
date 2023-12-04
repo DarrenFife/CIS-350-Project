@@ -12,6 +12,7 @@ import os
 import requests
 from datetime import date
 
+
 class Window(Qtw.QWidget):
     """The main program window.
 
@@ -60,7 +61,7 @@ class Window(Qtw.QWidget):
         # call url gui
         self.url_gui()
 
-        #call sub gui
+        # call sub gui
         self.sub_gui()
 
         # button to switch to url download
@@ -195,7 +196,7 @@ class Window(Qtw.QWidget):
         def appendFile(string, fileList):
             """Appends a string to the next line of a file."""
             fileList.append("\n" + string)
-            with open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'w') as fhand:
+            with open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'w') as fhand:
                 fhand.writelines(fileList)
             self.clear_window(self.sub_layout)
             for i in range(0, len(programInfo)):
@@ -363,14 +364,15 @@ class Window(Qtw.QWidget):
         sec = seconds % 60
         return min, sec
 
+
 def fetch_updates():
     try:
-        fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r')
+        fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
         programInfo = fhand.readlines()
     except:
-        if not os.path.exists(os.pardir +  "/YouTube-Downloads/-Downloads"):
-            os.makedirs(os.pardir +  "/YouTube-Downloads/")
-        fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'x')
+        if not os.path.exists(os.pardir + "/YouTube-Downloads/-Downloads"):
+            os.makedirs(os.pardir + "/YouTube-Downloads/")
+        fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'x')
         programInfo = [date.today().ctime() + "\n"]
         fhand.writelines(programInfo)
     if programInfo[0] != date.today().ctime() + "\n":
@@ -379,14 +381,16 @@ def fetch_updates():
             pytube_code.download_link(programInfo[i], 720)
     fhand.close()
 
+
 def update_date():
-    with open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'r') as fhand:
+    with open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r') as fhand:
         programInfo = fhand.readlines()
     programInfo[0] = date.today().ctime() + "\n"
-    fhand = open(os.pardir +  "/YouTube-Downloads/programInfo.txt", 'w')
+    fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'w')
     fhand.writelines(programInfo)
     fhand.close()
     app.exec_()
+
 
 if __name__ == "__main__":
     """Close the window."""
