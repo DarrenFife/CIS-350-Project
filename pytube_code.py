@@ -146,7 +146,7 @@ def _find_urls(key, var):
 class YDChannel(Channel):
     def __init__(self, url):
         try:
-            base_url = "https://www.youtube.com/" + extract.channel_name(url).split("/")[1] + "/"
+            base_url = "https://www.youtube.com" + extract.channel_name(url) + "/"
             print("Base:", base_url)
         except RegexMatchError as e:
             raise InvalidChannelException from e
@@ -163,7 +163,7 @@ class YDChannel(Channel):
             channel_pages = {base_url, base_url + "videos/", base_url + "playlists/", base_url + "releases/", url}
 
             for extension in channel_pages:
-                channel_page = base_url + extension
+                channel_page = extension
                 try:
                     extract.channel_name(channel_page)
                 except RegexMatchError as e:
