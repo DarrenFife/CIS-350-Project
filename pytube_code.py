@@ -209,14 +209,9 @@ class YDChannel(Channel):
 def check_channel_or_playlist_url(url):
     """"Checks if a link is a channel or playlist"""
     try:
-        c = YDChannel(url)
+        extract.channel_name(url)
     except InvalidChannelException:
-        try:
-            p = YDPlaylist(url)
-        except InvalidPlaylistException:
-            return False
-        else:
-            return True
+        return False
     else:
         return True
 
