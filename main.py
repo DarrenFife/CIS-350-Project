@@ -323,7 +323,8 @@ class Window(Qtw.QWidget):
         """Access folder from within the app"""
         if platform == "linux" or platform == "linux2":
             # linux
-            print("Linux detected")
+            path = os.pardir + "/YouTube-Downloads/"
+            Qtw.QFileDialog.getOpenFileName(self, directory=path)
         elif platform == "darwin":
             # OS X
             print("OS X detected")
