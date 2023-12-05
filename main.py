@@ -224,9 +224,9 @@ class Window(Qtw.QWidget):
                 sub_label.setFont(Qtg.QFont("Times", 30))
                 self.sub_layout.addWidget(sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
             else:
-                channelLabel = Qtw.QLabel(programInfo[i])
-                channelLabel.setFont(Qtg.QFont("Times", 15))
-                self.sub_layout.addWidget(channelLabel, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                channel_label = Qtw.QLabel(programInfo[i])
+                channel_label.setFont(Qtg.QFont("Times", 15))
+                self.sub_layout.addWidget(channel_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
         bottom_label = Qtw.QHBoxLayout()
         channel_box = Qtw.QLineEdit()
