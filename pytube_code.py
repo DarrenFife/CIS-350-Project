@@ -65,9 +65,11 @@ class YDVideo(YouTube):
         path -- string of the download path
         ("YouTube-Downloads" folder placed parallel to the program folder)
         """
-        try:
-            path = DOWNLOAD_DIR + self.channel_name + "/"
 
+        path = DOWNLOAD_DIR + self.channel_name + "/"
+        video_name = self.channel_name + "/" + self.title
+
+        try:
             # Filter to only .mp4 files
             filtered_streams = super().streams.filter(progressive=True,
                                                       file_extension="mp4")
@@ -97,8 +99,9 @@ class YDVideo(YouTube):
                   " with ID: " + self.video_id)
         except AgeRestrictedError:
             print(f'Video {self.video_url} is age restricted, skipping as no credentials.')
+            return video_name + " (Skipped as Age Restricted)"
 
-        return self.channel_name + "/" + self.title
+        return video_name
 
 
 class YDPlaylist(Playlist):
@@ -114,11 +117,32 @@ class YDPlaylist(Playlist):
                 self.yd_playlist.append(YDVideo(video_url))
 
     def download_playlist(self, max_res):
-        # TODO: Open file of
-        print(DOWNLOAD_DIR + "Playlists/" + self.title + ".txt")
-        for video in self.yd_playlist:
-            # TODO: Get the name of the playlist owner, then save name of playlist.txt as in their folder under Playlists
-            print("Append to txt:", video.download_video(max_res))
+        playlist_path = DOWNLOAD_DIR + "Playlists/"
+        file_path = playlist_path + self.title + ".txt"
+        print(f"Downloading to {file_path}")
+        if not os.path.exists(playlist_path):
+            os.makedirs(playlist_path)
+
+        video_urls = []
+
+        if os.path.isfile(file_path):
+            old_fplaylist = open(file_path, "r")
+            video_urls = old_fplaylist.readlines()
+            old_fplaylist.close()
+            os.remove(file_path)
+
+            for video in self.yd_playlist:
+                video_save_path = video.download_video(max_res) + "\n"
+
+                if video_save_path not in video_urls:
+                    video_urls.append(video_save_path)
+        else:
+            for video in self.yd_playlist:
+                video_urls.append(video.download_video(max_res) + "\n")
+
+        fplaylist = open(file_path, 'x')
+        fplaylist.writelines(video_urls)
+        fplaylist.close()
 
 
 def _find_ids(key, var):
