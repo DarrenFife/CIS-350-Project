@@ -84,6 +84,7 @@ class Window(Qtw.QWidget):
         res_action4 = QAction("480p", self)
         res_action5 = QAction("720p", self)
         menuBar = QMenuBar()
+        menuBar.setMaximumWidth(385)
         menuBar.setFont(Qtg.QFont("Times", 20))
         resMenu = menuBar.addMenu("&Download Resolution")
         resMenu.addAction(res_action1)
