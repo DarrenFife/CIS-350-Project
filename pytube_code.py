@@ -1,11 +1,6 @@
-import pytube as pyt
 from pytube import YouTube, Playlist, Channel, extract
-from pytube.exceptions import VideoUnavailable
-from pytube.exceptions import RegexMatchError
-from pytube.exceptions import AgeRestrictedError
+from pytube.exceptions import VideoUnavailable, RegexMatchError, AgeRestrictedError
 import os
-
-DOWNLOAD_DIR = os.pardir + "/YouTube-Downloads/"
 
 
 class InvalidURLException(Exception):
@@ -65,8 +60,7 @@ class YDVideo(YouTube):
         path -- string of the download path
         ("YouTube-Downloads" folder placed parallel to the program folder)
         """
-
-        path = DOWNLOAD_DIR + self.channel_name + "/"
+        path = os.pardir + "/YouTube-Downloads/" + self.channel_name + "/"
         video_name = self.channel_name + "/" + self.title
 
         try:
@@ -117,7 +111,7 @@ class YDPlaylist(Playlist):
                 self.yd_playlist.append(YDVideo(video_url))
 
     def download_playlist(self, max_res):
-        playlist_path = DOWNLOAD_DIR + "Playlists/"
+        playlist_path = os.pardir + "/YouTube-Downloads/Playlists/"
         file_path = playlist_path + self.title + ".txt"
         print(f"Downloading to {file_path}")
         if not os.path.exists(playlist_path):
