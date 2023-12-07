@@ -35,14 +35,14 @@ class TestYDVideo(TestCase):
 
     def test_video_unavailable(self):
         # Private video test
-        v = YDVideo("")
-        self.assertRaises(VideoUnavailable)
+        with self.assertRaises(VideoUnavailable):
+            YDVideo("https://www.youtube.com/watch?v=XKN3uZX2QMA")
 
     def test_video_age_restricted(self):
         # Age restricted video test
         v = YDVideo("https://www.youtube.com/watch?v=gSPbrmIpcy0")
-        v.download_video(720)
-        self.assertRaises(AgeRestrictedError)
+        error_message = 'alyankovic/WEIRD: The Al Yankovic Story - teaser trailer (Skipped as Age Restricted)'
+        self.assertEqual(v.download_video(720), error_message)
 
 
 class TestYDPlaylist(TestCase):
