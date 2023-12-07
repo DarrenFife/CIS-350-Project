@@ -29,7 +29,7 @@ class YDVideo(YouTube):
     Keyword arguments:
     """
     # URL Parameter constructor
-    def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ", channel_name=None):
+    def __init__(self, url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"):
         """Construct a YDVideo object using the video
         uploaded to the given YouTube link."""
         try:
@@ -45,10 +45,7 @@ class YDVideo(YouTube):
                 raise VideoUnavailable
             else:
                 print(f'Creating video object: {self.title} from {url}')
-                if channel_name is None:
-                    self.channel_name = Channel(self.channel_url).channel_name
-                else:
-                    self.channel_name = channel_name
+                self.download_path = os.pardir + "/YouTube-Downloads/" + self.author + "/"
 
     """Downloads Set Video to Project Folder"""
     def download_video(self, max_res):
@@ -60,8 +57,7 @@ class YDVideo(YouTube):
         path -- string of the download path
         ("YouTube-Downloads" folder placed parallel to the program folder)
         """
-        path = os.pardir + "/YouTube-Downloads/" + self.channel_name + "/"
-        video_name = self.channel_name + "/" + self.title
+        video_name = self.author + "/" + self.title
 
         try:
             # Filter to only .mp4 files
@@ -88,8 +84,8 @@ class YDVideo(YouTube):
 
             print("Best res:", best_res_stream.resolution)
 
-            best_res_stream.download(output_path=path, skip_existing=True)
-            print("Video downloaded: " + path + self.title +
+            best_res_stream.download(output_path=self.download_path, skip_existing=True)
+            print("Video downloaded: " + self.download_path + self.title +
                   " with ID: " + self.video_id)
         except AgeRestrictedError:
             print(f'Video {self.video_url} is age restricted, skipping as no credentials.')
