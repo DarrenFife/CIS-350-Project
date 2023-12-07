@@ -169,7 +169,7 @@ class YDChannel(Channel):
             self.all_videos = []
 
             for video_url in self.video_urls:
-                self.all_videos.append(YDVideo(url=video_url, channel_name=self.channel_name))
+                self.all_videos.append(YDVideo(url=video_url))
 
             self.playlist_urls = []
 
