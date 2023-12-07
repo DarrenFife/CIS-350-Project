@@ -36,16 +36,13 @@ class YDVideo(YouTube):
             extract.video_id(url)
         except RegexMatchError as e:
             raise InvalidVideoException from e
-        else:
-            try:
-                super().__init__(url)
-                self.video_url = url
-            except VideoUnavailable:
-                print(f'Video {self.title} from {url} is unavailable, skipping.')
-                raise VideoUnavailable
-            else:
-                print(f'Creating video object: {self.title} from {url}')
-                self.download_path = os.pardir + "/YouTube-Downloads/" + self.author + "/"
+        try:
+            super().__init__(url)
+            self.video_url = url
+            print(f'Creating video object: {self.title} from {url}')
+            self.download_path = os.pardir + "/YouTube-Downloads/" + self.author + "/"
+        except VideoUnavailable as e:
+            raise e
 
     """Downloads Set Video to Project Folder"""
     def download_video(self, max_res):
@@ -104,7 +101,12 @@ class YDPlaylist(Playlist):
             self.yd_playlist = []
 
             for video_url in self.video_urls:
-                self.yd_playlist.append(YDVideo(video_url))
+                try:
+                    v = YDVideo(video_url)
+                    self.yd_playlist.append(v)
+                except VideoUnavailable as e:
+                    print(f'Video from {e.video_id} is unavailable, skipping.')
+                
 
     def download_playlist(self, max_res):
         playlist_path = os.pardir + "/YouTube-Downloads/Playlists/"
@@ -171,7 +173,11 @@ class YDChannel(Channel):
             self.all_videos = []
 
             for video_url in self.video_urls:
-                self.all_videos.append(YDVideo(url=video_url))
+                try:
+                    v = YDVideo(url=video_url)
+                    self.all_videos.append(v)
+                except VideoUnavailable as e:
+                    print(f'Video from {e.video_id} is unavailable, skipping.')
 
             self.playlist_urls = []
 
@@ -237,23 +243,25 @@ def download_link(url, max_res):
     try:
         c = YDChannel(url)
     except InvalidChannelException:
-        print("Invalid Channel " + url)
+        print("Invalid Channel:", url)
         try:
             p = YDPlaylist(url)
         except InvalidPlaylistException:
-            print("Invalid Playlist " + url)
+            print("Invalid Playlist:", url)
             try:
                 v = YDVideo(url)
             except InvalidVideoException:
-                print("Invalid Video " + url)
+                print("Invalid Video:", url)
+            except VideoUnavailable:
+                print("Unavailable Video:", url)
             else:
-                print("Valid Video " + url)
+                print("Valid Video:", url)
                 v.download_video(max_res)
         else:
-            print("Valid Playlist " + url)
+            print("Valid Playlist:", url)
             p.download_playlist(max_res)
     else:
-        print("Valid Channel " + url)
+        print("Valid Channel:", url)
         c.download_channel(max_res)
 
 
