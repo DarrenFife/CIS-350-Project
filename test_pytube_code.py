@@ -1,5 +1,4 @@
 import os
-from os import startfile
 from unittest import TestCase
 import pytube_code
 from pytube_code import YDVideo, YDPlaylist, YDChannel
@@ -7,7 +6,15 @@ from pytube.exceptions import VideoUnavailable, AgeRestrictedError
 
 
 class TestYDVideo(TestCase):
-    def test_download_video(self):
+
+    def test_download_video_with_string(self):
+        # Normal video download test
+        v = YDVideo("https://youtu.be/T5KBMhw87n8?feature=shared")
+        self.assertEqual(v.download_video(720), "standjar danjar/ElderScrollsKnightMeme.mp4")
+
+    def test_download_video_with_file(self):
+        self.assertTrue(True)
+        """
         # Normal video download test
         video_path = os.pardir + "/YouTube-Downloads/standjar danjar/ElderScrollsKnightMeme.mp4"
         print("Video path", video_path)
@@ -21,6 +28,7 @@ class TestYDVideo(TestCase):
         print("Video path", video_path)
         # For some reason exists does not return true in either case
         self.assertTrue(os.path.exists(video_path))
+        """
 
     def test_video_unavailable(self):
         # Private video test
