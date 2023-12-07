@@ -51,7 +51,7 @@ class TestYDPlaylist(TestCase):
 
     def test_download_playlist_with_string(self):
         # Test if the playlist downloads using the returned string
-        self.assertEqual(self.p.download_playlist(720), "../YouTube-Downloads/Playlists/350 Test Vids.txt")
+        self.assertEqual(self.p.download_playlist(720), os.pardir + "/YouTube-Downloads/Playlists/350 Test Vids.txt")
 
     def test_download_playlist_with_file(self):
         # Test if the playlist downloads using the contents of the generated text file
@@ -72,7 +72,7 @@ class TestYDPlaylist(TestCase):
         # Would be nice to do this, but uncertain why file is not being found
         for video_path in video_paths:
             video_path = video_path.removesuffix("...\n")
-            file_path = "../YouTube-Downloads/" + video_path + ".mp4"
+            file_path = os.pardir + "/YouTube-Downloads/" + video_path + ".mp4"
             result = os.path.isfile(file_path)
             open(file_path)
             print("Checking if exists:", file_path, result)
