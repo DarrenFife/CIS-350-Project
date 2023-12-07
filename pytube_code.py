@@ -134,6 +134,8 @@ class YDPlaylist(Playlist):
         fplaylist.writelines(video_urls)
         fplaylist.close()
 
+        return file_path
+
 
 def _find_ids(key, var):
     if hasattr(var, 'items'):
