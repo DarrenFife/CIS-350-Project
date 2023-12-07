@@ -1,3 +1,5 @@
+import re
+
 from pytube import YouTube, Playlist, Channel, extract
 from pytube.exceptions import VideoUnavailable, RegexMatchError, AgeRestrictedError
 import os
@@ -39,8 +41,14 @@ class YDVideo(YouTube):
         try:
             super().__init__(url)
             self.video_url = url
-            print(f'Creating video object: {self.title} from {url}')
-            self.download_path = os.pardir + "/YouTube-Downloads/" + self.author + "/"
+
+            bad_chars = "<>:\"/\\|?*"
+
+            self.clean_title = re.sub(rf'[{bad_chars}]', '', self.title).removesuffix("...").strip()
+            self.clean_author = re.sub(rf'[{bad_chars}]', '', self.author).removesuffix("...").strip()
+
+            print(f'Creating video object: {self.clean_title} from {url}')
+            self.download_path = os.pardir + "/YouTube-Downloads/" + self.clean_author + "/"
         except VideoUnavailable as e:
             raise e
 
@@ -54,7 +62,7 @@ class YDVideo(YouTube):
         path -- string of the download path
         ("YouTube-Downloads" folder placed parallel to the program folder)
         """
-        video_name = self.author + "/" + self.title
+        video_name = self.clean_author + "/" + self.clean_title
 
         try:
             # Filter to only .mp4 files
@@ -82,7 +90,7 @@ class YDVideo(YouTube):
             print("Best res:", best_res_stream.resolution)
 
             best_res_stream.download(output_path=self.download_path, skip_existing=True)
-            print("Video downloaded: " + self.download_path + self.title +
+            print("Video downloaded: " + self.download_path + self.clean_title +
                   " with ID: " + self.video_id)
         except AgeRestrictedError:
             print(f'Video {self.video_url} is age restricted, skipping as no credentials.')
@@ -98,6 +106,10 @@ class YDPlaylist(Playlist):
         else:
             super().__init__(url)
 
+            bad_chars = "<>:\"/\\|?*"
+
+            self.clean_title = re.sub(rf'[{bad_chars}]', '', self.title).removesuffix("...").strip()
+
             self.yd_playlist = []
 
             for video_url in self.video_urls:
@@ -106,11 +118,10 @@ class YDPlaylist(Playlist):
                     self.yd_playlist.append(v)
                 except VideoUnavailable as e:
                     print(f'Video from {e.video_id} is unavailable, skipping.')
-                
 
     def download_playlist(self, max_res):
         playlist_path = os.pardir + "/YouTube-Downloads/Playlists/"
-        file_path = playlist_path + self.title + ".txt"
+        file_path = playlist_path + self.clean_title + ".txt"
         print(f"Downloading to {file_path}")
         if not os.path.exists(playlist_path):
             os.makedirs(playlist_path)
