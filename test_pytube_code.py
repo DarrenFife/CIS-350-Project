@@ -20,8 +20,6 @@ class TestYDVideo(TestCase):
         if os.path.exists(video_path):
             os.remove(video_path)
             print("Removed video:", video_path)
-        else:
-            print("Video does not exist:", video_path)
         v = YDVideo("https://youtu.be/T5KBMhw87n8?feature=shared")
         video_path = os.pardir + "/YouTube-Downloads/" + v.download_video(720)
         print("Video path", video_path)
@@ -86,7 +84,6 @@ class TestYDChannel(TestCase):
 
     def test_download_channel_videos(self):
         self.c.download_channel_videos(720)
-        self.assertTrue(True)
 
     def test_download_channel_playlists(self):
         playlist_paths = self.c.download_channel_playlists(720)
@@ -96,12 +93,15 @@ class TestYDChannel(TestCase):
             self.assertTrue(path_found)
 
     def test_download_channel(self):
-        self.fail()
+        self.c.download_channel(720)
 
 
 class Test(TestCase):
     def test_check_channel_or_playlist_url(self):
-        self.fail()
+        pytube_code.check_channel_or_playlist_url("https://www.youtube.com/@standjardanjar")
 
     def test_download_link(self):
-        self.fail()
+        pytube_code.download_link("https://www.youtube.com/@standjardanjar", 720)
+        pytube_code.download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A", 720)
+        pytube_code.download_link("https://youtu.be/T5KBMhw87n8?feature=shared", 720)
+
