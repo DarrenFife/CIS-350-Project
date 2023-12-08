@@ -20,8 +20,6 @@ class TestYDVideo(TestCase):
         if os.path.exists(video_path):
             os.remove(video_path)
             print("Removed video:", video_path)
-        else:
-            print("Video does not exist:", video_path)
         v = YDVideo("https://youtu.be/T5KBMhw87n8?feature=shared")
         video_path = os.pardir + "/YouTube-Downloads/" + v.download_video(720)
         print("Video path", video_path)
