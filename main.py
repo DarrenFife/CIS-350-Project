@@ -373,7 +373,7 @@ def fetch_updates():
         fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
         programInfo = fhand.readlines()
     except:
-        if not os.path.exists(os.pardir + "/YouTube-Downloads/-Downloads"):
+        if not os.path.exists(os.pardir + "/YouTube-Downloads/"):
             os.makedirs(os.pardir + "/YouTube-Downloads/")
         fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'x')
         programInfo = [date.today().ctime() + "\n"]
