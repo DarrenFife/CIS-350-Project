@@ -89,7 +89,7 @@ class YDVideo(YouTube):
 
             print("Best res:", best_res_stream.resolution)
 
-            best_res_stream.download(output_path=self.download_path, skip_existing=True)
+            best_res_stream.download(output_path=self.download_path, filename=self.clean_title, skip_existing=True)
             print("Video downloaded: " + self.download_path + self.clean_title +
                   " with ID: " + self.video_id)
         except AgeRestrictedError:
