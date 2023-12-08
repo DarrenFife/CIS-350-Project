@@ -10,28 +10,23 @@ class TestYDVideo(TestCase):
     def test_download_video_with_string(self):
         # Test if the video downloads using the returned string
         v = YDVideo("https://youtu.be/T5KBMhw87n8?feature=shared")
-        self.assertEqual(v.download_video(720), "standjar danjar/ElderScrollsKnightMeme.mp4")
+        self.assertEqual(v.download_video(720), "standjar danjar/ElderScrollsKnightMeme.mp4.mp4")
 
     def test_download_video_with_file(self):
         # Test if the video downloads using the file existing after
-        self.assertTrue(True)
-        """
-        # Would be nice to do this, but uncertain why file is not being found
         # Normal video download test
-        video_path = os.pardir + "/YouTube-Downloads/standjar danjar/ElderScrollsKnightMeme.mp4"
+        video_path = os.pardir + "/YouTube-Downloads/standjar danjar/ElderScrollsKnightMeme.mp4.mp4"
         print("Video path", video_path)
         if os.path.exists(video_path):
             os.remove(video_path)
-            print("Removed video")
+            print("Removed video:", video_path)
         else:
-            print("Does not exist")
+            print("Video does not exist:", video_path)
         v = YDVideo("https://youtu.be/T5KBMhw87n8?feature=shared")
         video_path = os.pardir + "/YouTube-Downloads/" + v.download_video(720)
         print("Video path", video_path)
-        # For some reason exists does not return true in either case
         self.assertTrue(os.path.exists(video_path))
-        # os.remove()
-        """
+        os.remove(video_path)
 
     def test_video_unavailable(self):
         # Private video test
@@ -41,7 +36,7 @@ class TestYDVideo(TestCase):
     def test_video_age_restricted(self):
         # Age restricted video test
         v = YDVideo("https://www.youtube.com/watch?v=gSPbrmIpcy0")
-        error_message = 'alyankovic/WEIRD The Al Yankovic Story - teaser trailer (Skipped as Age Restricted)'
+        error_message = 'alyankovic/WEIRD The Al Yankovic Story - teaser trailer.mp4 (Skipped as Age Restricted)'
         self.assertEqual(v.download_video(720), error_message)
 
 
@@ -74,7 +69,7 @@ class TestYDPlaylist(TestCase):
             video_path = video_path.removesuffix("\n")
             file_path = os.pardir + "/YouTube-Downloads/" + video_path
             result = os.path.isfile(file_path)
-            print("Checking if exists:", file_path, result)
+            # print("Checking if exists:", file_path, result)
             self.assertTrue(result)
             os.remove(file_path)
 
