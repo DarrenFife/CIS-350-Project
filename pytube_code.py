@@ -226,6 +226,8 @@ class YDChannel(Channel):
             video.download_video(max_res)
 
     def download_channel_playlists(self, max_res):
+        valid_playlist_paths = []
+
         for playlist_url in self.playlist_urls:
             try:
                 playlist = YDPlaylist(playlist_url)
@@ -233,7 +235,8 @@ class YDChannel(Channel):
                 print("Invalid Playlist: " + playlist_url)
             else:
                 print("Valid Playlist: " + playlist_url)
-                playlist.download_playlist(max_res)
+                valid_playlist_paths.append(playlist.download_playlist(max_res))
+        return valid_playlist_paths
 
     def download_channel(self, max_res):
         self.download_channel_videos(max_res)
