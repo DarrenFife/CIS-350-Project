@@ -99,7 +99,10 @@ class TestYDChannel(TestCase):
 
 class Test(TestCase):
     def test_check_channel_or_playlist_url(self):
-        self.fail()
+        pytube_code.check_channel_or_playlist_url("https://www.youtube.com/@standjardanjar")
 
     def test_download_link(self):
-        self.fail()
+        pytube_code.download_link("https://www.youtube.com/@standjardanjar")
+        pytube_code.download_link("https://www.youtube.com/@standjardanjar")
+        pytube_code.download_link("https://www.youtube.com/@standjardanjar")
+
