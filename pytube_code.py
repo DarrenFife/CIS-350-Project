@@ -186,6 +186,7 @@ class YDChannel(Channel):
             for video_url in self.video_urls:
                 try:
                     v = YDVideo(url=video_url)
+                    print(f'Creating video object: {v.clean_title} from {video_url}')
                     self.all_videos.append(v)
                 except VideoUnavailable as e:
                     print(f'Video from {e.video_id} is unavailable, skipping.')
