@@ -44,7 +44,7 @@ class YDVideo(YouTube):
 
             bad_chars = "<>:\"/\\|?*"
 
-            self.clean_title = re.sub(rf'[{bad_chars}]', '', self.title).removesuffix("...").strip()
+            self.clean_title = re.sub(rf'[{bad_chars}]', '', self.title).removesuffix("...").strip() + ".mp4"
             self.clean_author = re.sub(rf'[{bad_chars}]', '', self.author).removesuffix("...").strip()
 
             print(f'Creating video object: {self.clean_title} from {url}')
