@@ -1,16 +1,15 @@
+"""This module is where the GUI and all its elements are created"""
+from datetime import date
+import os
+import sys
+from sys import platform
 import PyQt5.QtWidgets as Qtw
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtWidgets import QMenuBar
 import PyQt5.QtGui as Qtg
 import PyQt5.QtCore as Qtc
 import pytube
 import qdarktheme as qdt
-import sys
-from sys import platform
-import pytube_code
-import os
 import requests
-from datetime import date
+import pytube_code
 
 
 class Window(Qtw.QWidget):
@@ -78,24 +77,24 @@ class Window(Qtw.QWidget):
 
         # dropdown menu to change max resolution
         self.resolution = 720
-        res_action1 = QAction("144p", self)
-        res_action2 = QAction("240p", self)
-        res_action3 = QAction("360p", self)
-        res_action4 = QAction("480p", self)
-        res_action5 = QAction("720p", self)
-        menuBar = QMenuBar()
-        menuBar.setMaximumWidth(385)
-        menuBar.setFont(Qtg.QFont("Times", 20))
-        resMenu = menuBar.addMenu("&Download Resolution")
-        resMenu.addAction(res_action1)
+        res_action1 = Qtw.QAction("144p", self)
+        res_action2 = Qtw.QAction("240p", self)
+        res_action3 = Qtw.QAction("360p", self)
+        res_action4 = Qtw.QAction("480p", self)
+        res_action5 = Qtw.QAction("720p", self)
+        menu_bar = Qtw.QMenuBar()
+        menu_bar.setMaximumWidth(385)
+        menu_bar.setFont(Qtg.QFont("Times", 20))
+        res_menu = menu_bar.addMenu("&Download Resolution")
+        res_menu.addAction(res_action1)
         res_action1.triggered.connect(lambda: self.set_res(144))
-        resMenu.addAction(res_action2)
+        res_menu.addAction(res_action2)
         res_action2.triggered.connect(lambda: self.set_res(240))
-        resMenu.addAction(res_action3)
+        res_menu.addAction(res_action3)
         res_action3.triggered.connect(lambda: self.set_res(360))
-        resMenu.addAction(res_action4)
+        res_menu.addAction(res_action4)
         res_action4.triggered.connect(lambda: self.set_res(480))
-        resMenu.addAction(res_action5)
+        res_menu.addAction(res_action5)
         res_action5.triggered.connect(lambda: self.set_res(720))
 
         # button to switch themes
@@ -117,7 +116,7 @@ class Window(Qtw.QWidget):
         subscribed_button.clicked.connect(self.switch_to_subscribed)
 
         # add the widgets to inner top layer
-        buttons_layout.addWidget(menuBar)
+        buttons_layout.addWidget(menu_bar)
         buttons_layout.addWidget(self.search_button)
         buttons_layout.addWidget(self.url_gui_button)
         buttons_layout.addWidget(theme_button)
@@ -195,13 +194,13 @@ class Window(Qtw.QWidget):
 
     def sub_gui(self):
         """Arrange the subscribed channels page."""
-        def appendFile(string, fileList):
+        def append_file(string, file_list):
             """Appends a string to the next line of a file."""
             if pytube_code.check_channel_or_playlist_url(string):
-                fileList.append("\n" + string)
+                file_list.append("\n" + string)
                 with open(os.pardir + "/YouTube-Downloads/programInfo.txt",
                           'w') as fhand:
-                    fhand.writelines(fileList)
+                    fhand.writelines(file_list)
                 self.clear_window(self.sub_layout)
                 for i in range(0, len(programInfo)):
                     if i == 0:
@@ -241,7 +240,7 @@ class Window(Qtw.QWidget):
         channel_box = Qtw.QLineEdit()
         channel_box.setPlaceholderText("Type channel URL here...")
         channel_button = Qtw.QPushButton("Add Channel")
-        channel_button.clicked.connect(lambda: appendFile(channel_box.
+        channel_button.clicked.connect(lambda: append_file(channel_box.
                                                           text(), programInfo))
         bottom_label.addWidget(channel_box)
         bottom_label.addWidget(channel_button)
@@ -255,13 +254,14 @@ class Window(Qtw.QWidget):
             pytube_code.download_link(self.url_box.text(), self.resolution)
 
     def search_click(self):
-        """Create sorted list to reference for different pages"""
+        """Create sorted list and shows them on search page"""
         if self.search_box.text() != "":
             search_list = pytube.Search(self.search_box.text()).results
             self.search_page_view = self.page_view_list(search_list)
             self.show_videos(self.search_page_view)
 
     def show_videos(self, organized_search_list):
+        """Show videos on search page when clicking go"""
         if self.inner_layer2.count() > 0:
             self.clear_window(self.inner_layer2)
         for video in organized_search_list[self.page_number]:
@@ -271,7 +271,7 @@ class Window(Qtw.QWidget):
                                      f"  Length: {time[0]}:{time[1]}")
             button.setFont(Qtg.QFont("Times", 20))
             pixmap = Qtg.QPixmap()
-            pixmap.loadFromData(requests.get(video.thumbnail_url).content)
+            pixmap.loadFromData(requests.get(video.thumbnail_url, timeout=5).content)
             button.setIcon(Qtg.QIcon(pixmap))
             button.setIconSize(Qtc.QSize(400, 235))
             button.setStyleSheet("text-align:left;")
@@ -294,14 +294,17 @@ class Window(Qtw.QWidget):
             self.inner_layer3.addWidget(prev_button)
 
     def next_button(self):
+        """Next button when searching through videos"""
         self.page_number += 1
         self.show_videos(self.search_page_view)
 
     def previous_button(self):
+        """Back button when searching through videos"""
         self.page_number -= 1
         self.show_videos(self.search_page_view)
 
     def set_res(self, res):
+        """Set resolution download for videos"""
         self.resolution = res
 
     def switch_to_subscribed(self):
@@ -352,6 +355,7 @@ class Window(Qtw.QWidget):
             layout.removeItem(item)
 
     def page_view_list(self, lov):
+        """Create sorted list of video objects for show_videos to reference from"""
         num = 0
         if len(lov) % 3 == 0:
             num = len(lov) // 3
