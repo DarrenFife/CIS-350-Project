@@ -63,21 +63,20 @@ class TestYDPlaylist(TestCase):
         fplaylist.close()
         os.remove(playlist_path)
         self.assertEqual(len(video_paths), 3)
-        video1 = 'Weird Al Yankovic/Amish Paradise (Parody of Gangsta\'s Paradise - Official HD\n'
-        video2 = 'Weird Al Yankovic/Party In The CIA (Parody of Party In The U.S.A. by Miley Cy\n'
-        video3 = 'CaptainSparklez/Fallen Kingdom - A Minecraft Parody of Coldplay\'s Viva la Vida (Music Video)\n'
+        video1 = 'Weird Al Yankovic/Amish Paradise (Parody of Gangsta\'s Paradise - Official HD.mp4\n'
+        video2 = 'Weird Al Yankovic/Party In The CIA (Parody of Party In The U.S.A. by Miley Cy.mp4\n'
+        video3 = 'CaptainSparklez/Fallen Kingdom - A Minecraft Parody of Coldplay\'s Viva la Vida (Music Video).mp4\n'
         self.assertEqual(video_paths[0], video1)
         self.assertEqual(video_paths[1], video2)
         self.assertEqual(video_paths[2], video3)
         # Would be nice to do this, but uncertain why file is not being found
         for video_path in video_paths:
             video_path = video_path.removesuffix("\n")
-            file_path = os.pardir + "/YouTube-Downloads/" + video_path + ".mp4"
+            file_path = os.pardir + "/YouTube-Downloads/" + video_path
             result = os.path.isfile(file_path)
-            open(file_path)
             print("Checking if exists:", file_path, result)
             self.assertTrue(result)
-            # os.remove(file_path)
+            os.remove(file_path)
 
     def test_double_download_playlist_with_file(self):
         # Test if the playlist downloads additional files using the contents of the generated the text file
