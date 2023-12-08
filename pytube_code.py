@@ -1,7 +1,8 @@
 import re
 
 from pytube import YouTube, Playlist, Channel, extract
-from pytube.exceptions import VideoUnavailable, RegexMatchError, AgeRestrictedError
+from pytube.exceptions import VideoUnavailable
+from pytube.exceptions import RegexMatchError, AgeRestrictedError
 import os
 
 
@@ -44,8 +45,11 @@ class YDVideo(YouTube):
 
             bad_chars = "<>:\"/\\|?*"
 
-            self.clean_title = re.sub(rf'[{bad_chars}]', '', self.title).removesuffix("...").strip() + ".mp4"
-            self.clean_author = re.sub(rf'[{bad_chars}]', '', self.author).removesuffix("...").strip()
+            self.clean_title = re.sub(rf'[{bad_chars}]', '',
+                                      self.title).removesuffix(
+                                          "...").strip() + ".mp4"
+            self.clean_author = re.sub(rf'[{bad_chars}]', '',
+                                       self.author).removesuffix("...").strip()
 
             print(f'Creating video object: {self.clean_title} from {url}')
             self.download_path = os.pardir + "/YouTube-Downloads/" + self.clean_author + "/"
@@ -89,11 +93,14 @@ class YDVideo(YouTube):
 
             print("Best res:", best_res_stream.resolution)
 
-            best_res_stream.download(output_path=self.download_path, filename=self.clean_title, skip_existing=True)
-            print("Video downloaded: " + self.download_path + self.clean_title +
-                  " with ID: " + self.video_id)
+            best_res_stream.download(output_path=self.download_path,
+                                     filename=self.clean_title,
+                                     skip_existing=True)
+            print("Video downloaded: " + self.download_path +
+                  self.clean_title + " with ID: " + self.video_id)
         except AgeRestrictedError:
-            print(f'Video {self.video_url} is age restricted, skipping as no credentials.')
+            print(f'Video {self.video_url} is age restricted,
+                  skipping as no credentials.')
             return video_name + " (Skipped as Age Restricted)"
 
         return video_name
@@ -108,7 +115,8 @@ class YDPlaylist(Playlist):
 
             bad_chars = "<>:\"/\\|?*"
 
-            self.clean_title = re.sub(rf'[{bad_chars}]', '', self.title).removesuffix("...").strip()
+            self.clean_title = re.sub(
+                rf'[{bad_chars}]', '', self.title).removesuffix("...").strip()
 
             self.yd_playlist = []
 
@@ -174,7 +182,8 @@ def _find_urls(key, var):
 class YDChannel(Channel):
     def __init__(self, url):
         try:
-            base_url = "https://www.youtube.com" + extract.channel_name(url).removesuffix("/None") + "/"
+            base_url = "https://www.youtube.com" + extract.channel_name(
+                url).removesuffix("/None") + "/"
             print("Base:", base_url)
         except RegexMatchError as e:
             raise InvalidChannelException from e
@@ -186,14 +195,17 @@ class YDChannel(Channel):
             for video_url in self.video_urls:
                 try:
                     v = YDVideo(url=video_url)
-                    print(f'Creating video object: {v.clean_title} from {video_url}')
+                    print(f'Creating video object:
+                          {v.clean_title} from {video_url}')
                     self.all_videos.append(v)
                 except VideoUnavailable as e:
                     print(f'Video from {e.video_id} is unavailable, skipping.')
 
             self.playlist_urls = []
 
-            channel_pages = {base_url, base_url + "videos/", base_url + "playlists/", base_url + "releases/", url}
+            channel_pages = {base_url, base_url + "videos/",
+                             base_url + "playlists/",
+                             base_url + "releases/", url}
 
             for extension in channel_pages:
                 channel_page = extension
@@ -202,11 +214,12 @@ class YDChannel(Channel):
                 except RegexMatchError as e:
                     print(channel_page + " not found.")
                 else:
-                    found_urls = list(_find_urls('playlistId', Channel(channel_page).initial_data))
+                    found_urls = list(_find_urls(
+                        'playlistId', Channel(channel_page).initial_data))
 
                     # Skip Watch Later playlists as they break download
-                    if "https://www.youtube.com/playlist?list=WL" in found_urls:
-                        found_urls.remove("https://www.youtube.com/playlist?list=WL")
+                    if "https://www.youtube.com/playlist?list=WL" in found_urls: found_urls.remove(
+                            "https://www.youtube.com/playlist?list=WL")
 
                     print(channel_page + " found playlist(s):")
                     print(found_urls)
@@ -216,7 +229,8 @@ class YDChannel(Channel):
                         if found_url not in self.playlist_urls:
                             self.playlist_urls.append(found_url)
                         else:
-                            print("Found duplicate playlist url (skipped):", found_url)
+                            print("Found duplicate playlist url (skipped):",
+                                    found_url)
 
             print("All urls:")
             print(self.playlist_urls)
@@ -235,7 +249,8 @@ class YDChannel(Channel):
                 print("Invalid Playlist: " + playlist_url)
             else:
                 print("Valid Playlist: " + playlist_url)
-                valid_playlist_paths.append(playlist.download_playlist(max_res))
+                valid_playlist_paths.append(
+                    playlist.download_playlist(max_res))
         return valid_playlist_paths
 
     def download_channel(self, max_res):
@@ -281,11 +296,14 @@ def download_link(url, max_res):
 
 
 # Test case
-# download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A", 720)
+# download_link(
+# "https://www.youtube.com/playlist?
+# list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A", 720)
 # Random Meme YouTuber I found test case
 # download_link("https://www.youtube.com/@standjardanjar", 720)
 # download_link("https://youtu.be/T5KBMhw87n8?feature=shared", 720)
-# download_link("https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q", 720)
+# download_link(
+# "https://www.youtube.com/channel/UCDBrVr0ttWpoRY-_yZajp2Q", 720)
 
 # Age restricted test
 # download_link("https://www.youtube.com/watch?v=gSPbrmIpcy0", 720)

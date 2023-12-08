@@ -164,7 +164,8 @@ class Window(Qtw.QWidget):
         video_outer_layout = Qtw.QVBoxLayout()
         video_gui.setLayout(video_outer_layout)
 
-        # create layouts for each element of page (search line, videos, and page buttons))
+        # create layouts for each element of page
+        # (search line, videos, and page buttons))
         inner_layer1 = Qtw.QHBoxLayout()
         self.inner_layer2 = Qtw.QVBoxLayout()
         self.inner_layer3 = Qtw.QHBoxLayout()
@@ -198,19 +199,23 @@ class Window(Qtw.QWidget):
             """Appends a string to the next line of a file."""
             if pytube_code.check_channel_or_playlist_url(string):
                 fileList.append("\n" + string)
-                with open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'w') as fhand:
+                with open(os.pardir + "/YouTube-Downloads/programInfo.txt",
+                          'w') as fhand:
                     fhand.writelines(fileList)
                 self.clear_window(self.sub_layout)
                 for i in range(0, len(programInfo)):
                     if i == 0:
                         sub_label = Qtw.QLabel("Subscribed Channels:\n")
                         sub_label.setFont(Qtg.QFont("Times", 30))
-                        self.sub_layout.addWidget(sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                        self.sub_layout.addWidget(
+                            sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
                     else:
                         channel_label = Qtw.QLabel(programInfo[i])
                         channel_label.setFont(Qtg.QFont("Times", 15))
-                        self.sub_layout.addWidget(channel_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
-            
+                        self.sub_layout.addWidget(
+                            channel_label, 1,
+                            Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+
         sub_gui = Qtw.QWidget()
 
         self.sub_layout = Qtw.QVBoxLayout()
@@ -224,17 +229,20 @@ class Window(Qtw.QWidget):
             if i == 0:
                 sub_label = Qtw.QLabel("Subscribed Channels:\n")
                 sub_label.setFont(Qtg.QFont("Times", 30))
-                self.sub_layout.addWidget(sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                self.sub_layout.addWidget(sub_label, 1,
+                                          Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
             else:
                 channel_label = Qtw.QLabel(programInfo[i])
                 channel_label.setFont(Qtg.QFont("Times", 15))
-                self.sub_layout.addWidget(channel_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                self.sub_layout.addWidget(channel_label, 1,
+                                          Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
         bottom_label = Qtw.QHBoxLayout()
         channel_box = Qtw.QLineEdit()
         channel_box.setPlaceholderText("Type channel URL here...")
         channel_button = Qtw.QPushButton("Add Channel")
-        channel_button.clicked.connect(lambda: appendFile(channel_box.text(), programInfo))
+        channel_button.clicked.connect(lambda: appendFile(channel_box.
+                                                          text(), programInfo))
         bottom_label.addWidget(channel_box)
         bottom_label.addWidget(channel_button)
         self.sub_layout.addLayout(bottom_label)
@@ -335,7 +343,8 @@ class Window(Qtw.QWidget):
         os.system("explorer.exe " + os.pardir)
 
     def clear_window(self, layout):
-        """Clears the videos from search page once we don't need them anymore"""
+        """Clears the videos from search page
+        once we don't need them anymore"""
         for i in reversed(range(layout.count())):
             item = layout.itemAt(i)
             if isinstance(item, Qtw.QWidgetItem):
