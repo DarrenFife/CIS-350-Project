@@ -174,7 +174,7 @@ def _find_urls(key, var):
 class YDChannel(Channel):
     def __init__(self, url):
         try:
-            base_url = "https://www.youtube.com" + extract.channel_name(url) + "/"
+            base_url = "https://www.youtube.com" + extract.channel_name(url).removesuffix("/None") + "/"
             print("Base:", base_url)
         except RegexMatchError as e:
             raise InvalidChannelException from e
