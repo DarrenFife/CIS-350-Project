@@ -69,7 +69,6 @@ class TestYDPlaylist(TestCase):
         self.assertEqual(video_paths[0], video1)
         self.assertEqual(video_paths[1], video2)
         self.assertEqual(video_paths[2], video3)
-        """
         # Would be nice to do this, but uncertain why file is not being found
         for video_path in video_paths:
             video_path = video_path.removesuffix("\n")
@@ -79,7 +78,6 @@ class TestYDPlaylist(TestCase):
             print("Checking if exists:", file_path, result)
             self.assertTrue(result)
             # os.remove(file_path)
-        """
 
     def test_double_download_playlist_with_file(self):
         # Test if the playlist downloads additional files using the contents of the generated the text file
@@ -88,11 +86,20 @@ class TestYDPlaylist(TestCase):
 
 
 class TestYDChannel(TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.c = YDChannel("https://www.youtube.com/@standjardanjar")
+
     def test_download_channel_videos(self):
-        self.fail()
+        self.c.download_channel_videos(720)
+        self.assertTrue(True)
 
     def test_download_channel_playlists(self):
-        self.fail()
+        playlist_paths = self.c.download_channel_playlists(720)
+        for playlist_path in playlist_paths:
+            path_found = os.path.isfile(playlist_path)
+            print(f"Path {playlist_path} found: {path_found}")
+            self.assertTrue(path_found)
 
     def test_download_channel(self):
         self.fail()
