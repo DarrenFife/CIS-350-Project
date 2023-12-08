@@ -99,8 +99,8 @@ class YDVideo(YouTube):
             print("Video downloaded: " + self.download_path +
                   self.clean_title + " with ID: " + self.video_id)
         except AgeRestrictedError:
-            print(f'Video {self.video_url} is age restricted,
-                  skipping as no credentials.')
+            print(f'Video {self.video_url} is age restricted,' +
+                  'skipping as no credentials.')
             return video_name + " (Skipped as Age Restricted)"
 
         return video_name
@@ -195,8 +195,8 @@ class YDChannel(Channel):
             for video_url in self.video_urls:
                 try:
                     v = YDVideo(url=video_url)
-                    print(f'Creating video object:
-                          {v.clean_title} from {video_url}')
+                    print(f'Creating video object:' +
+                          '{v.clean_title} from {video_url}')
                     self.all_videos.append(v)
                 except VideoUnavailable as e:
                     print(f'Video from {e.video_id} is unavailable, skipping.')
