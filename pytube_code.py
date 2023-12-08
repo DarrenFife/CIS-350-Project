@@ -236,10 +236,12 @@ class YDChannel(Channel):
             print(self.playlist_urls)
 
     def download_channel_videos(self, max_res):
+        """Download all the individual videos found on the channel page"""
         for video in self.all_videos:
             video.download_video(max_res)
 
     def download_channel_playlists(self, max_res):
+        """Download all the playlists discovered for the channel"""
         valid_playlist_paths = []
 
         for playlist_url in self.playlist_urls:
@@ -254,12 +256,13 @@ class YDChannel(Channel):
         return valid_playlist_paths
 
     def download_channel(self, max_res):
+        """Wrapper function to run the two helper functions"""
         self.download_channel_videos(max_res)
         self.download_channel_playlists(max_res)
 
 
 def check_channel_or_playlist_url(url):
-    """"Checks if a link is a channel or playlist"""
+    """Checks if a link is a channel or playlist"""
     try:
         extract.channel_name(url)
     except InvalidChannelException:
@@ -270,29 +273,38 @@ def check_channel_or_playlist_url(url):
 
 def download_link(url, max_res):
     """Download a YouTube link by turning it into the right type of object"""
+    link_confirmed = False
+    message = "Link unconfirmed"
+
     try:
         c = YDChannel(url)
     except InvalidChannelException:
-        print("Invalid Channel:", url)
+        message = "Invalid Channel url: " + url
+    else:
+        link_confirmed = True
+        message = "Valid Channel url: " + url
+        c.download_channel(max_res)
+    if not link_confirmed:
         try:
             p = YDPlaylist(url)
         except InvalidPlaylistException:
-            print("Invalid Playlist:", url)
-            try:
-                v = YDVideo(url)
-            except InvalidVideoException:
-                print("Invalid Video:", url)
-            except VideoUnavailable:
-                print("Unavailable Video:", url)
-            else:
-                print("Valid Video:", url)
-                v.download_video(max_res)
+            message = "Invalid Channel/Playlist url: " + url
         else:
-            print("Valid Playlist:", url)
+            link_confirmed = True
+            message = "Valid Playlist url: " + url
             p.download_playlist(max_res)
-    else:
-        print("Valid Channel:", url)
-        c.download_channel(max_res)
+    if not link_confirmed:
+        try:
+            v = YDVideo(url)
+        except VideoUnavailable:
+            message = "Unavailable Video: " + url
+        except InvalidVideoException:
+            message = "Invalid Channel/Playlist/Video url: " + url
+        else:
+            message = "Valid Video: " + url
+            v.download_video(max_res)
+
+    return message
 
 
 # Test case

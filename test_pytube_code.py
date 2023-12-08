@@ -1,6 +1,6 @@
 import os
 from unittest import TestCase
-import pytube_code
+import pytube_code as pytc
 from pytube_code import YDVideo, YDPlaylist, YDChannel
 from pytube.exceptions import VideoUnavailable, AgeRestrictedError
 
@@ -98,10 +98,30 @@ class TestYDChannel(TestCase):
 
 class Test(TestCase):
     def test_check_channel_or_playlist_url(self):
-        pytube_code.check_channel_or_playlist_url("https://www.youtube.com/@standjardanjar")
+        self.assertTrue(pytc.check_channel_or_playlist_url("https://www.youtube.com/@standjardanjar"))
+        # not_channel = "https://www.youtube.com/watch?v=XKN3uZX2QMA"
+        # self.assertFalse(pytc.check_channel_or_playlist_url(not_channel))
 
     def test_download_link(self):
-        pytube_code.download_link("https://www.youtube.com/@standjardanjar", 720)
-        pytube_code.download_link("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A", 720)
-        pytube_code.download_link("https://youtu.be/T5KBMhw87n8?feature=shared", 720)
+        valid_channel = "https://www.youtube.com/@standjardanjar"
+        m = pytc.download_link(valid_channel, 720)
+        self.assertEqual(m, "Valid Channel url: " + valid_channel)
+        # invalid_channel = "https://www.youtube.com/cmarkiplier"
+        # m = pytc.download_link(invalid_channel, 720)
+        # self.assertEqual(m, "Invalid Channel url: " + invalid_channel)
+        valid_playlist = "https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A"
+        m = pytc.download_link(valid_playlist, 720)
+        self.assertEqual(m, "Valid Playlist url: " + valid_playlist)
+        # invalid_playlist = "https://www.youtube.com/playlist?list=PLdQkToevBvCpNl4Udln13y8y1mTi5A"
+        # m = pytc.download_link(invalid_playlist, 720)
+        # self.assertEqual(m, "Invalid Channel/Playlist url: " + invalid_playlist)
+        valid_video = "https://youtu.be/T5KBMhw87n8?feature=shared"
+        m = pytc.download_link(valid_video, 720)
+        self.assertEqual(m, "Valid Video: " + valid_video)
+        invalid_url = "https://www.youtube.com/watch?v=T5KBM87n8"
+        m = pytc.download_link(invalid_url, 720)
+        self.assertEqual(m, "Invalid Channel/Playlist/Video url: " + invalid_url)
+        unavailable_video = "https://www.youtube.com/watch?v=XKN3uZX2QMA"
+        m = pytc.download_link(unavailable_video, 720)
+        self.assertEqual(m, "Unavailable Video: " + unavailable_video)
 
