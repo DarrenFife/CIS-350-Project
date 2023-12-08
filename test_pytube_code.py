@@ -46,7 +46,8 @@ class TestYDVideo(TestCase):
 
 
 class TestYDPlaylist(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         self.p = YDPlaylist("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
 
     def test_download_playlist_with_string(self):
