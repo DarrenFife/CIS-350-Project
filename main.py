@@ -132,7 +132,6 @@ class Window(Qtw.QWidget):
 
     def url_gui(self):
         """Arrange the search and download page."""
-        # TODO: Perhaps should change to self instead of url_gui?
         url_gui = Qtw.QWidget()
 
         # create layout of widget
@@ -164,7 +163,7 @@ class Window(Qtw.QWidget):
         video_gui.setLayout(video_outer_layout)
 
         # create layouts for each element of page
-        # (search line, videos, and page buttons))
+        # (search line, videos, and page buttons)
         inner_layer1 = Qtw.QHBoxLayout()
         self.inner_layer2 = Qtw.QVBoxLayout()
         self.inner_layer3 = Qtw.QHBoxLayout()
@@ -199,17 +198,17 @@ class Window(Qtw.QWidget):
             if pytube_code.check_channel_or_playlist_url(string):
                 file_list.append("\n" + string)
                 with open(os.pardir + "/YouTube-Downloads/programInfo.txt",
-                          'w') as fhand:
-                    fhand.writelines(file_list)
+                          'w') as f_hand:
+                    f_hand.writelines(file_list)
                 self.clear_window(self.sub_layout)
-                for i in range(0, len(programInfo)):
+                for i in range(0, len(program_info)):
                     if i == 0:
                         sub_label = Qtw.QLabel("Subscribed Channels:\n")
                         sub_label.setFont(Qtg.QFont("Times", 30))
                         self.sub_layout.addWidget(
                             sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
                     else:
-                        channel_label = Qtw.QLabel(programInfo[i])
+                        channel_label = Qtw.QLabel(program_info[i])
                         channel_label.setFont(Qtg.QFont("Times", 15))
                         self.sub_layout.addWidget(
                             channel_label, 1,
@@ -220,18 +219,18 @@ class Window(Qtw.QWidget):
         self.sub_layout = Qtw.QVBoxLayout()
         sub_gui.setLayout(self.sub_layout)
 
-        fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
-        programInfo = fhand.readlines()
-        fhand.close()
+        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
+        program_info = f_hand.readlines()
+        f_hand.close()
 
-        for i in range(0, len(programInfo)):
+        for i in range(0, len(program_info)):
             if i == 0:
                 sub_label = Qtw.QLabel("Subscribed Channels:\n")
                 sub_label.setFont(Qtg.QFont("Times", 30))
                 self.sub_layout.addWidget(sub_label, 1,
                                           Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
             else:
-                channel_label = Qtw.QLabel(programInfo[i])
+                channel_label = Qtw.QLabel(program_info[i])
                 channel_label.setFont(Qtg.QFont("Times", 15))
                 self.sub_layout.addWidget(channel_label, 1,
                                           Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
@@ -240,8 +239,8 @@ class Window(Qtw.QWidget):
         channel_box = Qtw.QLineEdit()
         channel_box.setPlaceholderText("Type channel URL here...")
         channel_button = Qtw.QPushButton("Add Channel")
-        channel_button.clicked.connect(lambda: append_file(channel_box.
-                                                          text(), programInfo))
+        text = channel_box.text()
+        channel_button.clicked.connect(lambda: append_file(text, program_info))
         bottom_label.addWidget(channel_box)
         bottom_label.addWidget(channel_button)
         self.sub_layout.addLayout(bottom_label)
@@ -271,12 +270,15 @@ class Window(Qtw.QWidget):
                                      f"  Length: {time[0]}:{time[1]}")
             button.setFont(Qtg.QFont("Times", 20))
             pixmap = Qtg.QPixmap()
-            pixmap.loadFromData(requests.get(video.thumbnail_url, timeout=5).content)
+            pixmap.loadFromData(requests.get(video.thumbnail_url,
+                                             timeout=5).content)
             button.setIcon(Qtg.QIcon(pixmap))
             button.setIconSize(Qtc.QSize(400, 235))
             button.setStyleSheet("text-align:left;")
             url = video.watch_url
-            button.clicked.connect(lambda: pytube_code.download_link(url))
+            button.clicked.connect(lambda:
+                                   pytube_code.download_link(url,
+                                                             self.resolution))
             button.setMinimumSize(0, 250)
             self.inner_layer2.addWidget(button, 1,
                                         Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
@@ -333,7 +335,7 @@ class Window(Qtw.QWidget):
 
     def access_folder(self):
         """Access folder from within the app"""
-        if platform == "linux" or platform == "linux2":
+        if platform in ("Linux", "Linux2"):
             # linux
             path = os.pardir + "/YouTube-Downloads/"
             Qtw.QFileDialog.getOpenFileName(self, directory=path)
@@ -355,7 +357,8 @@ class Window(Qtw.QWidget):
             layout.removeItem(item)
 
     def page_view_list(self, lov):
-        """Create sorted list of video objects for show_videos to reference from"""
+        """Create sorted list of video objects for show_videos to
+        reference from"""
         num = 0
         if len(lov) % 3 == 0:
             num = len(lov) // 3
@@ -376,40 +379,46 @@ class Window(Qtw.QWidget):
         return new_lst
 
     def get_time(self, seconds):
-        min = seconds // 60
+        """
+        Get time in minutes and seconds
+        :param seconds: int
+        :return: minute: int, sec: int
+        """
+        minute = seconds // 60
         sec = seconds % 60
-        return min, sec
+        return minute, sec
 
 
 def fetch_updates():
+    """Fetch new videos from channels we are subscribed to"""
     try:
-        fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
-        programInfo = fhand.readlines()
+        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
+        program_info = f_hand.readlines()
     except:
         if not os.path.exists(os.pardir + "/YouTube-Downloads/"):
             os.makedirs(os.pardir + "/YouTube-Downloads/")
-        fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'x')
-        programInfo = [date.today().ctime() + "\n"]
-        fhand.writelines(programInfo)
-    if programInfo[0] != date.today().ctime() + "\n":
+        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'x')
+        program_info = [date.today().ctime() + "\n"]
+        f_hand.writelines(program_info)
+    if program_info[0] != date.today().ctime() + "\n":
         print("Fetching updates!")
-        for i in range(1, len(programInfo)):
-            pytube_code.download_link(programInfo[i], 720)
-    fhand.close()
+        for i in range(1, len(program_info)):
+            pytube_code.download_link(program_info[i], 720)
+    f_hand.close()
 
 
 def update_date():
-    with open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r') as fhand:
-        programInfo = fhand.readlines()
-    programInfo[0] = date.today().ctime() + "\n"
-    fhand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'w')
-    fhand.writelines(programInfo)
-    fhand.close()
+    """Update date in txt file for fetching_updates """
+    with open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r') as f_hand:
+        program_info = f_hand.readlines()
+    program_info[0] = date.today().ctime() + "\n"
+    f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'w')
+    f_hand.writelines(program_info)
+    f_hand.close()
     app.exec_()
 
 
 if __name__ == "__main__":
-    """Close the window."""
     app = Qtw.QApplication(sys.argv)
     fetch_updates()
     window = Window()
