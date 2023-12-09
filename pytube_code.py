@@ -1,29 +1,26 @@
+"""This module is where the pytube functions and objects are incorporated"""
 import re
 
+import os
 from pytube import YouTube, Playlist, Channel, extract
 from pytube.exceptions import VideoUnavailable
 from pytube.exceptions import RegexMatchError, AgeRestrictedError
-import os
 
 
 class InvalidURLException(Exception):
     """Raised when URL is not valid"""
-    pass
 
 
 class InvalidVideoException(InvalidURLException):
     """Raised when URL is not a valid YDVideo"""
-    pass
 
 
 class InvalidPlaylistException(InvalidURLException):
     """Raised when URL is not a valid Playlist"""
-    pass
 
 
 class InvalidChannelException(InvalidURLException):
     """Raised when URL is not a valid Channel"""
-    pass
 
 
 class YDVideo(YouTube):
@@ -52,11 +49,11 @@ class YDVideo(YouTube):
                                        self.author).removesuffix("...").strip()
 
             print(f'Creating video object: {self.clean_title} from {url}')
-            self.download_path = os.pardir + "/YouTube-Downloads/" + self.clean_author + "/"
+            self.download_path = (os.pardir + "/YouTube-Downloads/" +
+                                  self.clean_author + "/")
         except VideoUnavailable as e:
             raise e
 
-    """Downloads Set Video to Project Folder"""
     def download_video(self, max_res):
         """Download a video from a YouTube link.
 
@@ -72,12 +69,6 @@ class YDVideo(YouTube):
             # Filter to only .mp4 files
             filtered_streams = super().streams.filter(progressive=True,
                                                       file_extension="mp4")
-            # TODO: Filter by resolution instead to do this?
-            # reversed_streams = super().streams.order_by("resolution")
-            # print(reversed_streams)
-            # filtered_streams = super().streams
-            # print(filtered_streams)
-            highest_res_stream = filtered_streams.get_highest_resolution()
 
             # Print resolutions for testing
             print([stream.resolution for stream in filtered_streams])
@@ -107,6 +98,7 @@ class YDVideo(YouTube):
 
 
 class YDPlaylist(Playlist):
+    """A playlist uploaded to YouTube."""
     def __init__(self, url):
         if "list=" not in url:
             raise InvalidPlaylistException
@@ -128,6 +120,7 @@ class YDPlaylist(Playlist):
                     print(f'Video from {e.video_id} is unavailable, skipping.')
 
     def download_playlist(self, max_res):
+        """Download a playlist from a YouTube link."""
         playlist_path = os.pardir + "/YouTube-Downloads/Playlists/"
         file_path = playlist_path + self.clean_title + ".txt"
         print(f"Downloading to {file_path}")
@@ -137,9 +130,9 @@ class YDPlaylist(Playlist):
         video_urls = []
 
         if os.path.isfile(file_path):
-            old_fplaylist = open(file_path, "r")
-            video_urls = old_fplaylist.readlines()
-            old_fplaylist.close()
+            with open(file_path, "r", encoding="utf-8") as old_fplaylist:
+                video_urls = old_fplaylist.readlines()
+                old_fplaylist.close()
             os.remove(file_path)
 
             for video in self.yd_playlist:
@@ -151,9 +144,9 @@ class YDPlaylist(Playlist):
             for video in self.yd_playlist:
                 video_urls.append(video.download_video(max_res) + "\n")
 
-        fplaylist = open(file_path, 'x')
-        fplaylist.writelines(video_urls)
-        fplaylist.close()
+        with open(file_path, 'x', encoding="utf-8") as fplaylist:
+            fplaylist.writelines(video_urls)
+            fplaylist.close()
 
         return file_path
 
@@ -180,6 +173,7 @@ def _find_urls(key, var):
 
 
 class YDChannel(Channel):
+    """A channel uploaded to YouTube."""
     def __init__(self, url):
         try:
             base_url = "https://www.youtube.com" + extract.channel_name(
@@ -195,8 +189,8 @@ class YDChannel(Channel):
             for video_url in self.video_urls:
                 try:
                     v = YDVideo(url=video_url)
-                    print(f'Creating video object:' +
-                          '{v.clean_title} from {video_url}')
+                    print('Creating video object:' +
+                          f'{v.clean_title} from {video_url}')
                     self.all_videos.append(v)
                 except VideoUnavailable as e:
                     print(f'Video from {e.video_id} is unavailable, skipping.')
@@ -218,7 +212,8 @@ class YDChannel(Channel):
                         'playlistId', Channel(channel_page).initial_data))
 
                     # Skip Watch Later playlists as they break download
-                    if "https://www.youtube.com/playlist?list=WL" in found_urls: found_urls.remove(
+                    if "https://www.youtube.com/playlist?list=WL" in found_urls:
+                        found_urls.remove(
                             "https://www.youtube.com/playlist?list=WL")
 
                     print(channel_page + " found playlist(s):")
@@ -230,7 +225,7 @@ class YDChannel(Channel):
                             self.playlist_urls.append(found_url)
                         else:
                             print("Found duplicate playlist url (skipped):",
-                                    found_url)
+                                  found_url)
 
             print("All urls:")
             print(self.playlist_urls)
@@ -267,8 +262,7 @@ def check_channel_or_playlist_url(url):
         extract.channel_name(url)
     except InvalidChannelException:
         return False
-    else:
-        return True
+    return True
 
 
 def download_link(url, max_res):

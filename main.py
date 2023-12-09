@@ -198,7 +198,7 @@ class Window(Qtw.QWidget):
             if pytube_code.check_channel_or_playlist_url(string):
                 file_list.append("\n" + string)
                 with open(os.pardir + "/YouTube-Downloads/programInfo.txt",
-                          'w') as f_hand:
+                          'w', encoding="utf-8") as f_hand:
                     f_hand.writelines(file_list)
                 self.clear_window(self.sub_layout)
                 for i in range(0, len(program_info)):
@@ -219,9 +219,10 @@ class Window(Qtw.QWidget):
         self.sub_layout = Qtw.QVBoxLayout()
         sub_gui.setLayout(self.sub_layout)
 
-        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
-        program_info = f_hand.readlines()
-        f_hand.close()
+        with open(os.pardir + "/YouTube-Downloads/programInfo.txt",
+                  'r') as f_hand:
+            program_info = f_hand.readlines()
+            f_hand.close()
 
         for i in range(0, len(program_info)):
             if i == 0:
@@ -392,12 +393,14 @@ class Window(Qtw.QWidget):
 def fetch_updates():
     """Fetch new videos from channels we are subscribed to"""
     try:
-        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r')
+        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r',
+                      encoding="utf-8")
         program_info = f_hand.readlines()
-    except:
+    except FileNotFoundError:
         if not os.path.exists(os.pardir + "/YouTube-Downloads/"):
             os.makedirs(os.pardir + "/YouTube-Downloads/")
-        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'x')
+        f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'x',
+                      encoding="utf-8")
         program_info = [date.today().ctime() + "\n"]
         f_hand.writelines(program_info)
     if program_info[0] != date.today().ctime() + "\n":
@@ -412,9 +415,10 @@ def update_date():
     with open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'r') as f_hand:
         program_info = f_hand.readlines()
     program_info[0] = date.today().ctime() + "\n"
-    f_hand = open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'w')
-    f_hand.writelines(program_info)
-    f_hand.close()
+    with open(os.pardir + "/YouTube-Downloads/programInfo.txt", 'w',
+              encoding="utf-8") as f_hand:
+        f_hand.writelines(program_info)
+        f_hand.close()
     app.exec_()
 
 
