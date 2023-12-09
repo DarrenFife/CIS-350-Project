@@ -37,10 +37,10 @@ class Window(Qtw.QWidget):
         self._theme_number = 0
 
         # keep track of organized search list for page view
-        self.search_page_view = []
+        self._search_page_view = []
 
         # keep track of page number
-        self.page_number = 0
+        self._page_number = 0
 
         # set layout of window
         outer_layout = Qtw.QVBoxLayout()
@@ -51,8 +51,8 @@ class Window(Qtw.QWidget):
         outer_layout.addLayout(buttons_layout)
 
         # create stacked layout for different windows
-        self.stacked = Qtw.QStackedLayout()
-        outer_layout.addLayout(self.stacked)
+        self._stacked = Qtw.QStackedLayout()
+        outer_layout.addLayout(self._stacked)
 
         # call video gui
         self.video_gui()
@@ -64,19 +64,19 @@ class Window(Qtw.QWidget):
         self.sub_gui()
 
         # button to switch to url download
-        self.url_gui_button = Qtw.QPushButton("Download")
-        self.url_gui_button.setFixedHeight(45)
-        self.url_gui_button.setFont(Qtg.QFont("Times", 20))
-        self.url_gui_button.clicked.connect(self.switch_to_url)
+        self._url_gui_button = Qtw.QPushButton("Download")
+        self._url_gui_button.setFixedHeight(45)
+        self._url_gui_button.setFont(Qtg.QFont("Times", 20))
+        self._url_gui_button.clicked.connect(self.switch_to_url)
 
         # button to switch to search
-        self.search_button = Qtw.QPushButton("Search")
-        self.search_button.setFixedHeight(45)
-        self.search_button.setFont(Qtg.QFont("Times", 20))
-        self.search_button.clicked.connect(self.switch_to_search)
+        self._search_button = Qtw.QPushButton("Search")
+        self._search_button.setFixedHeight(45)
+        self._search_button.setFont(Qtg.QFont("Times", 20))
+        self._search_button.clicked.connect(self.switch_to_search)
 
         # dropdown menu to change max resolution
-        self.resolution = 720
+        self._resolution = 720
         res_action1 = Qtw.QAction("144p", self)
         res_action2 = Qtw.QAction("240p", self)
         res_action3 = Qtw.QAction("360p", self)
@@ -117,8 +117,8 @@ class Window(Qtw.QWidget):
 
         # add the widgets to inner top layer
         buttons_layout.addWidget(menu_bar)
-        buttons_layout.addWidget(self.search_button)
-        buttons_layout.addWidget(self.url_gui_button)
+        buttons_layout.addWidget(self._search_button)
+        buttons_layout.addWidget(self._url_gui_button)
         buttons_layout.addWidget(theme_button)
         buttons_layout.addWidget(folder_button)
         buttons_layout.addWidget(subscribed_button)
@@ -138,21 +138,21 @@ class Window(Qtw.QWidget):
         layout = Qtw.QVBoxLayout()
 
         # create input box for video url
-        self.url_box = Qtw.QLineEdit()
-        self.url_box.setPlaceholderText("Insert URL")
+        self._url_box = Qtw.QLineEdit()
+        self._url_box.setPlaceholderText("Insert URL")
 
         # create download button
         download_button = Qtw.QPushButton("Download")
         download_button.clicked.connect(self.on_click)
 
         # add widget to layout and adjust it to the top of the widget
-        layout.addWidget(self.url_box)
+        layout.addWidget(self._url_box)
         layout.addWidget(download_button,
                          alignment=Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
         # add layout to page and add it to stackedLayout
         url_gui.setLayout(layout)
-        self.stacked.addWidget(url_gui)
+        self._stacked.addWidget(url_gui)
 
     def video_gui(self):
         """Arrange the video browse page."""
@@ -165,19 +165,19 @@ class Window(Qtw.QWidget):
         # create layouts for each element of page
         # (search line, videos, and page buttons)
         inner_layer1 = Qtw.QHBoxLayout()
-        self.inner_layer2 = Qtw.QVBoxLayout()
-        self.inner_layer3 = Qtw.QHBoxLayout()
+        self._inner_layer2 = Qtw.QVBoxLayout()
+        self._inner_layer3 = Qtw.QHBoxLayout()
 
         # create search box
-        self.search_box = Qtw.QLineEdit()
-        self.search_box.setPlaceholderText("Search")
+        self._search_box = Qtw.QLineEdit()
+        self._search_box.setPlaceholderText("Search")
 
         # create search button
         search_button = Qtw.QPushButton("Go")
         search_button.clicked.connect(self.search_click)
 
         # add widgets to first layer
-        inner_layer1.addWidget(self.search_box)
+        inner_layer1.addWidget(self._search_box)
         inner_layer1.addWidget(search_button)
 
         # adjusts first inner layer to the top of the layout
@@ -185,11 +185,11 @@ class Window(Qtw.QWidget):
 
         # add layouts to page
         video_outer_layout.addLayout(inner_layer1, 0)
-        video_outer_layout.addLayout(self.inner_layer2, 9)
-        video_outer_layout.addLayout(self.inner_layer3, 1)
+        video_outer_layout.addLayout(self._inner_layer2, 9)
+        video_outer_layout.addLayout(self._inner_layer3, 1)
 
         # add page to stackedLayout
-        self.stacked.addWidget(video_gui)
+        self._stacked.addWidget(video_gui)
 
     def sub_gui(self):
         """Arrange the subscribed channels page."""
@@ -200,24 +200,24 @@ class Window(Qtw.QWidget):
                 with open(os.pardir + "/YouTube-Downloads/programInfo.txt",
                           'w', encoding="utf-8") as f_hand:
                     f_hand.writelines(file_list)
-                self.clear_window(self.sub_layout)
+                self.clear_window(self._sub_layout)
                 for i in range(0, len(program_info)):
                     if i == 0:
                         sub_label = Qtw.QLabel("Subscribed Channels:\n")
                         sub_label.setFont(Qtg.QFont("Times", 30))
-                        self.sub_layout.addWidget(
+                        self._sub_layout.addWidget(
                             sub_label, 1, Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
                     else:
                         channel_label = Qtw.QLabel(program_info[i])
                         channel_label.setFont(Qtg.QFont("Times", 15))
-                        self.sub_layout.addWidget(
+                        self._sub_layout.addWidget(
                             channel_label, 1,
                             Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
         sub_gui = Qtw.QWidget()
 
-        self.sub_layout = Qtw.QVBoxLayout()
-        sub_gui.setLayout(self.sub_layout)
+        self._sub_layout = Qtw.QVBoxLayout()
+        sub_gui.setLayout(self._sub_layout)
 
         with open(os.pardir + "/YouTube-Downloads/programInfo.txt",
                   'r') as f_hand:
@@ -228,13 +228,13 @@ class Window(Qtw.QWidget):
             if i == 0:
                 sub_label = Qtw.QLabel("Subscribed Channels:\n")
                 sub_label.setFont(Qtg.QFont("Times", 30))
-                self.sub_layout.addWidget(sub_label, 1,
-                                          Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                self._sub_layout.addWidget(sub_label, 1,
+                                           Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
             else:
                 channel_label = Qtw.QLabel(program_info[i])
                 channel_label.setFont(Qtg.QFont("Times", 15))
-                self.sub_layout.addWidget(channel_label, 1,
-                                          Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+                self._sub_layout.addWidget(channel_label, 1,
+                                           Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
 
         bottom_label = Qtw.QHBoxLayout()
         channel_box = Qtw.QLineEdit()
@@ -244,27 +244,27 @@ class Window(Qtw.QWidget):
         channel_button.clicked.connect(lambda: append_file(text, program_info))
         bottom_label.addWidget(channel_box)
         bottom_label.addWidget(channel_button)
-        self.sub_layout.addLayout(bottom_label)
+        self._sub_layout.addLayout(bottom_label)
 
-        self.stacked.addWidget(sub_gui)
+        self._stacked.addWidget(sub_gui)
 
     def on_click(self):
         """Perform the download pytube function."""
-        if self.url_box.text() != "":
-            pytube_code.download_link(self.url_box.text(), self.resolution)
+        if self._url_box.text() != "":
+            pytube_code.download_link(self._url_box.text(), self.resolution)
 
     def search_click(self):
         """Create sorted list and shows them on search page"""
-        if self.search_box.text() != "":
-            search_list = pytube.Search(self.search_box.text()).results
+        if self._search_box.text() != "":
+            search_list = pytube.Search(self._search_box.text()).results
             self.search_page_view = self.page_view_list(search_list)
             self.show_videos(self.search_page_view)
 
     def show_videos(self, organized_search_list):
         """Show videos on search page when clicking go"""
-        if self.inner_layer2.count() > 0:
-            self.clear_window(self.inner_layer2)
-        for video in organized_search_list[self.page_number]:
+        if self._inner_layer2.count() > 0:
+            self.clear_window(self._inner_layer2)
+        for video in organized_search_list[self._page_number]:
             time = self.get_time(video.length)
             button = Qtw.QPushButton(f"     {video.title}\n\n     "
                                      f"Created by: {video.author}\n\n   "
@@ -279,48 +279,48 @@ class Window(Qtw.QWidget):
             url = video.watch_url
             button.clicked.connect(lambda:
                                    pytube_code.download_link(url,
-                                                             self.resolution))
+                                                             self._resolution))
             button.setMinimumSize(0, 250)
-            self.inner_layer2.addWidget(button, 1,
-                                        Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
+            self._inner_layer2.addWidget(button, 1,
+                                         Qtc.Qt.Alignment(Qtc.Qt.AlignTop))
         prev_button = Qtw.QPushButton("Previous")
         prev_button.clicked.connect(self.previous_button)
         nxt_button = Qtw.QPushButton("Next")
         nxt_button.clicked.connect(self.next_button)
-        self.clear_window(self.inner_layer3)
-        if 0 < self.page_number < len(organized_search_list) - 1:
-            self.inner_layer3.addWidget(prev_button)
-            self.inner_layer3.addWidget(nxt_button)
-        if self.page_number == 0:
-            self.inner_layer3.addWidget(nxt_button)
-        if self.page_number == len(organized_search_list) - 1:
-            self.inner_layer3.addWidget(prev_button)
+        self.clear_window(self._inner_layer3)
+        if 0 < self._page_number < len(organized_search_list) - 1:
+            self._inner_layer3.addWidget(prev_button)
+            self._inner_layer3.addWidget(nxt_button)
+        if self._page_number == 0:
+            self._inner_layer3.addWidget(nxt_button)
+        if self._page_number == len(organized_search_list) - 1:
+            self._inner_layer3.addWidget(prev_button)
 
     def next_button(self):
         """Next button when searching through videos"""
-        self.page_number += 1
+        self._page_number += 1
         self.show_videos(self.search_page_view)
 
     def previous_button(self):
         """Back button when searching through videos"""
-        self.page_number -= 1
+        self._page_number -= 1
         self.show_videos(self.search_page_view)
 
     def set_res(self, res):
         """Set resolution download for videos"""
-        self.resolution = res
+        self._resolution = res
 
     def switch_to_subscribed(self):
         """Load subscribed channels page."""
-        self.stacked.setCurrentIndex(2)
+        self._stacked.setCurrentIndex(2)
 
     def switch_to_url(self):
         """Load video browse page."""
-        self.stacked.setCurrentIndex(1)
+        self._stacked.setCurrentIndex(1)
 
     def switch_to_search(self):
         """Load search and download page."""
-        self.stacked.setCurrentIndex(0)
+        self._stacked.setCurrentIndex(0)
 
     def switch_theme(self):
         """Toggle button for switching themes"""
