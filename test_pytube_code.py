@@ -134,4 +134,3 @@ class Test(TestCase):
         unavailable_video = "https://www.youtube.com/watch?v=XKN3uZX2QMA"
         m = pytc.download_link(unavailable_video, 720)
         self.assertEqual(m, "Unavailable Video: " + unavailable_video)
-
