@@ -8,13 +8,12 @@ from pytube.exceptions import VideoUnavailable, AgeRestrictedError
 class TestYDVideo(TestCase):
 
     def test_download_video_with_string(self):
-        # Test if the video downloads using the returned string
+        """Test if the video downloads using the returned string"""
         v = YDVideo("https://youtu.be/T5KBMhw87n8?feature=shared")
         self.assertEqual(v.download_video(720), "standjar danjar/ElderScrollsKnightMeme.mp4.mp4")
 
     def test_download_video_with_file(self):
-        # Test if the video downloads using the file existing after
-        # Normal video download test
+        """Normal video download test"""
         video_path = os.pardir + "/YouTube-Downloads/standjar danjar/ElderScrollsKnightMeme.mp4.mp4"
         print("Video path", video_path)
         if os.path.exists(video_path):
@@ -27,12 +26,12 @@ class TestYDVideo(TestCase):
         os.remove(video_path)
 
     def test_video_unavailable(self):
-        # Private video test
+        """Private video test"""
         with self.assertRaises(VideoUnavailable):
             YDVideo("https://www.youtube.com/watch?v=XKN3uZX2QMA")
 
     def test_video_age_restricted(self):
-        # Age restricted video test
+        """Age restricted video test"""
         v = YDVideo("https://www.youtube.com/watch?v=gSPbrmIpcy0")
         error_message = 'alyankovic/WEIRD The Al Yankovic Story - teaser trailer.mp4 (Skipped as Age Restricted)'
         self.assertEqual(v.download_video(720), error_message)
@@ -41,14 +40,15 @@ class TestYDVideo(TestCase):
 class TestYDPlaylist(TestCase):
     @classmethod
     def setUpClass(self):
+        """Setup for YDPlaylist tests"""
         self.p = YDPlaylist("https://www.youtube.com/playlist?list=PLdQkToevBvCpDNl4Udlnhn13y8y1mTi5A")
 
     def test_download_playlist_with_string(self):
-        # Test if the playlist downloads using the returned string
+        """Test if the playlist downloads using the returned string"""
         self.assertEqual(self.p.download_playlist(720), os.pardir + "/YouTube-Downloads/Playlists/350 Test Vids.txt")
 
     def test_download_playlist_with_file(self):
-        # Test if the playlist downloads using the contents of the generated text file
+        """Test if the playlist downloads using the contents of the generated text file"""
         playlist_path = self.p.download_playlist(720)
 
         fplaylist = open(playlist_path, "r")
@@ -80,12 +80,19 @@ class TestYDPlaylist(TestCase):
 class TestYDChannel(TestCase):
     @classmethod
     def setUpClass(self):
+        playlists_path = os.pardir + "/YouTube-Downloads/Playlists/"
+        if os.path.isdir(playlists_path):
+            for filename in os.listdir(playlists_path):
+                os.unlink(playlists_path + filename)
+            os.rmdir(playlists_path)
         self.c = YDChannel("https://www.youtube.com/@standjardanjar")
 
     def test_download_channel_videos(self):
+        """Test downloading all channel videos to check it doesn't error"""
         self.c.download_channel_videos(720)
 
     def test_download_channel_playlists(self):
+        """Test downloaded all playlists from a channel"""
         playlist_paths = self.c.download_channel_playlists(720)
         for playlist_path in playlist_paths:
             path_found = os.path.isfile(playlist_path)
@@ -93,16 +100,19 @@ class TestYDChannel(TestCase):
             self.assertTrue(path_found)
 
     def test_download_channel(self):
+        """Test downloading everything from a channel"""
         self.c.download_channel(720)
 
 
 class Test(TestCase):
     def test_check_channel_or_playlist_url(self):
+        """Test if checking is a channel works"""
         self.assertTrue(pytc.check_channel_or_playlist_url("https://www.youtube.com/@standjardanjar"))
         # not_channel = "https://www.youtube.com/watch?v=XKN3uZX2QMA"
         # self.assertFalse(pytc.check_channel_or_playlist_url(not_channel))
 
     def test_download_link(self):
+        """Test if downloading link figures out what to do correctly"""
         valid_channel = "https://www.youtube.com/@standjardanjar"
         m = pytc.download_link(valid_channel, 720)
         self.assertEqual(m, "Valid Channel url: " + valid_channel)
